@@ -1,4 +1,5 @@
-import Link from "next/link";
+"use client";
+import { useState } from "react";
 
 const items = [
   { id: "1", name: "World Tour Hoodie", price: 65, image: "👕", category: "Clothing" },
@@ -10,6 +11,16 @@ const items = [
 ];
 
 export default function MerchPage() {
+  const addToCart = (item) => {
+    const cart = JSON.parse(localStorage.getItem("cart") || '{"items":[],"total":0,"event":"Merch"}');
+    const existing = cart.items.find(i => i.id === item.id);
+    if (existing) existing.qty += 1;
+    else cart.items.push({ ...item, qty: 1 });
+    cart.total = cart.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(`${item.name} added to cart!`);
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Merch Store</h1>
@@ -20,7 +31,7 @@ export default function MerchPage() {
             <p className="text-xs text-gray-400">{item.category}</p>
             <h3 className="font-bold mt-1">{item.name}</h3>
             <p className="text-purple-400 font-bold mt-2">${item.price}</p>
-            <button className="mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-bold w-full">Add to Cart</button>
+            <button onClick={() => addToCart(item)} className="mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-bold w-full">Add to Cart</button>
           </div>
         ))}
       </div>

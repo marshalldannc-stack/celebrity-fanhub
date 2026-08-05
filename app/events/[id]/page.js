@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const eventsData = {
@@ -25,6 +25,7 @@ const eventsData = {
 
 export default function EventDetail() {
   const { id } = useParams();
+  const router = useRouter();
   const event = eventsData[id];
   const [qty, setQty] = useState({});
 
@@ -35,6 +36,14 @@ export default function EventDetail() {
   };
 
   const total = event.tickets.reduce((sum, t) => sum + (qty[t.id] || 0) * t.price, 0);
+
+  const checkout = () => {
+    const items = event.tickets.filter(t => qty[t.id] > 0).map(t => ({ id: t.id, name: t.name, price: t.price, qty: qty[t.id] }));
+    if (items.length === 0) return alert("Select at least one ticket");
+    const cart = { items, total, event: event.title };
+    localStorage.setItem("cart", JSON.stringify(cart));
+    router.push("/cart");
+  };
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -60,7 +69,7 @@ export default function EventDetail() {
       {total > 0 && (
         <div className="mt-8 border-t border-gray-700 pt-6">
           <p className="text-2xl font-bold">Total: ${total}</p>
-          <button className="mt-4 w-full bg-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-purple-500">
+          <button onClick={checkout} className="mt-4 w-full bg-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-purple-500">
             Proceed to Checkout
           </button>
         </div>
