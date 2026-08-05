@@ -146,6 +146,8 @@ export default function CartPage() {
   }
 
   if (step === "instructions") {
+    const details = `Method: ${selectedMethod?.name}\nAmount: $${cart.total}\nEvent: ${cart.event}\nEmail: ${session.user.email}\nItems: ${cart.items.map(i => i.name + " x" + i.qty).join(", ")}`;
+
     return (
       <div className="max-w-md mx-auto mt-10 text-center">
         <div className="text-5xl mb-4">📩</div>
@@ -157,17 +159,22 @@ export default function CartPage() {
           <p className="text-sm text-gray-300"><strong>Amount:</strong> ${cart.total}</p>
           <p className="text-sm text-gray-300"><strong>Event:</strong> {cart.event}</p>
           <p className="text-sm text-gray-300"><strong>Email:</strong> {session.user.email}</p>
+          <p className="text-sm text-gray-300"><strong>Items:</strong> {cart.items.map(i => `${i.name} x${i.qty}`).join(", ")}</p>
         </div>
-        <p className="text-gray-400 text-xs mb-4">Open chat below and we'll send you the payment details.</p>
+
+        <button onClick={() => { navigator.clipboard.writeText(details); alert("Order details copied! Paste them in the chat."); }} className="w-full mb-3 bg-gray-700 text-white px-4 py-3 rounded-full text-sm font-bold hover:bg-gray-600">
+          📋 Copy Order Details
+        </button>
+        <p className="text-gray-400 text-xs mb-4">Open chat, paste your order details, and we'll send payment info.</p>
 
         <div className="border border-gray-700 rounded-xl p-6 text-left space-y-4 text-sm">
           <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4">
             <p className="font-bold text-yellow-400 mb-2">⚠️ Important — Please Read</p>
             <ul className="text-gray-300 space-y-2">
-              <li>1. We'll send payment details in the chat below</li>
-              <li>2. This is a <strong>temporary account</strong> — use only for this payment</li>
-              <li>3. After sending payment, <strong>keep your receipt</strong></li>
-              <li>4. Your order will be confirmed once payment is verified</li>
+              <li>1. Copy your order details above and paste in chat</li>
+              <li>2. We'll send you payment instructions</li>
+              <li>3. This is a <strong>temporary account</strong> — use only for this payment</li>
+              <li>4. After sending payment, <strong>keep your receipt</strong></li>
             </ul>
           </div>
         </div>
