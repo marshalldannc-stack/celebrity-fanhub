@@ -99,6 +99,25 @@ export default function CartPage() {
     setStep("instructions");
   };
 
+  const handlePaymentComplete = async () => {
+    const userEmail = localStorage.getItem("userEmail") || prompt("Enter your email for payment details:");
+    if (userEmail) {
+      localStorage.setItem("userEmail", userEmail);
+      await fetch("/api/payment-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          method: selectedMethod?.id || "other",
+          amount: cart.total,
+          orderId: "ORD-" + Date.now().toString(36).toUpperCase(),
+          event: cart.event,
+        }),
+      });
+    }
+    processOrder(selectedMethod?.id || "other");
+  };
+
   if (!cart) return (
     <div className="max-w-md mx-auto mt-20 text-center">
       <h1 className="text-2xl font-bold mb-4">Cart is Empty</h1>
@@ -142,7 +161,7 @@ export default function CartPage() {
         <button onClick={() => { if (typeof Tawk_API !== "undefined") Tawk_API.maximize(); return false; }} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold">
           💬 Chat Support
         </button>
-        <button onClick={() => processOrder(selectedMethod?.id || "other")} className="w-full mt-3 bg-green-600 text-white px-6 py-3 rounded-full font-bold">
+        <button onClick={handlePaymentComplete} className="w-full mt-3 bg-green-600 text-white px-6 py-3 rounded-full font-bold">
           ✅ I've Made Payment
         </button>
         <button onClick={() => setStep("payment")} className="text-gray-400 mt-4 text-sm">← Back</button>
