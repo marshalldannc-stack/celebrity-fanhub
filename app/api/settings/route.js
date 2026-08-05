@@ -1,18 +1,26 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
+
+let cache = null;
+let cacheTime = 0;
 
 export async function GET() {
+  if (cache && Date.now() - cacheTime < 300000) {
+    return NextResponse.json(cache);
+  }
+  
   try {
     const row = await prisma.siteSetting.findUnique({ where: { key: "site" } });
-    if (row?.value) return NextResponse.json(JSON.parse(row.value));
+    if (row?.value) {
+      cache = JSON.parse(row.value);
+      cacheTime = Date.now();
+      return NextResponse.json(cache);
+    }
   } catch {}
+  
   return NextResponse.json({
-    artistName: "Artist Name",
-    heroImage: "",
-    bio: "Official Fan Hub",
-    news: "",
+    artistName: "", heroImage: "", bio: "", news: "",
+    eventsImage: "", fanCardImage: "", merchImage: "",
   });
 }
 
@@ -24,6 +32,10 @@ export async function POST(request) {
       update: { value: JSON.stringify(body) },
       create: { key: "site", value: JSON.stringify(body) },
     });
-  } catch {}
-  return NextResponse.json({ success: true });
+    cache = body;
+    cacheTime = Date.now();
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Save failed" }, { status: 500 });
+  }
 }
