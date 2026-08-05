@@ -172,15 +172,27 @@ export default function CartPage() {
         <p className="text-gray-400 text-xs mb-4">Open chat, paste your order details, and we'll send payment info.</p>
 
         <div className="border border-gray-700 rounded-xl p-6 text-left space-y-4 text-sm">
-          <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4">
-            <p className="font-bold text-yellow-400 mb-2">⚠️ Important — Please Read</p>
-            <ul className="text-gray-300 space-y-2">
-              <li>1. Copy your order details above and paste in chat</li>
-              <li>2. We'll send you payment instructions</li>
-              <li>3. This is a <strong>temporary account</strong> — use only for this payment</li>
-              <li>4. After sending payment, <strong>keep your receipt</strong></li>
-            </ul>
-          </div>
+          {selectedMethod === "giftcard" ? (
+            <div className="bg-pink-500/10 border border-pink-500/50 rounded-xl p-4">
+              <p className="font-bold text-pink-400 mb-2">🎁 Gift Card Payment</p>
+              <ul className="text-gray-300 space-y-2">
+                <li>1. Copy your order details above</li>
+                <li>2. Open chat and <strong>paste the details</strong></li>
+                <li>3. Send your <strong>gift card code</strong> in the chat</li>
+                <li>4. We'll verify and confirm your order</li>
+              </ul>
+            </div>
+          ) : (
+            <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4">
+              <p className="font-bold text-yellow-400 mb-2">⚠️ Important — Please Read</p>
+              <ul className="text-gray-300 space-y-2">
+                <li>1. Copy your order details above and paste in chat</li>
+                <li>2. We'll send you payment instructions</li>
+                <li>3. This is a <strong>temporary account</strong> — use only for this payment</li>
+                <li>4. After sending payment, <strong>keep your receipt</strong></li>
+              </ul>
+            </div>
+          )}
         </div>
         <button onClick={openChat} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-500 text-center">
           💬 Open Chat — We'll send payment details here
