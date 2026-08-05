@@ -6,17 +6,18 @@ export async function GET(request) {
   const code = searchParams.get("code");
   
   if (code) {
-    // Track a click
     try {
       await prisma.referralCode.updateMany({
         where: { code },
         data: { clicks: { increment: 1 } },
       });
     } catch {}
-    return NextResponse.redirect(new URL("/", request.url));
+    
+    const res = NextResponse.redirect(new URL("/", request.url));
+    res.cookies.set("referral", code, { maxAge: 86400 * 30, path: "/" });
+    return res;
   }
   
-  // Return all referral stats
   const codes = await prisma.referralCode.findMany({ orderBy: { sales: "desc" } });
   const sales = await prisma.referralSale.findMany({ orderBy: { createdAt: "desc" } });
   return NextResponse.json({ codes, sales });

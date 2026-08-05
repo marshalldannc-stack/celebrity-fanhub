@@ -19,6 +19,11 @@ const otherMethods = [
   { id: "chime", name: "Chime", icon: "🔵" },
 ];
 
+const getReferral = () => {
+  const match = document.cookie.match(/referral=([^;]+)/);
+  return match ? match[1] : null;
+};
+
 export default function CartPage() {
   const { data: session } = useSession();
   const [cart, setCart] = useState(null);
@@ -48,6 +53,7 @@ export default function CartPage() {
           orderId: type === "request" ? "REQ-" + Date.now().toString(36).toUpperCase() : "ORD-" + Date.now().toString(36).toUpperCase(),
           event: cart.event,
           type: type,
+          referral: getReferral(),
         }),
       });
     } catch {}
