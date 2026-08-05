@@ -87,7 +87,7 @@ export default function CartPage() {
 
   const selectPayment = async (method) => {
     if (method === "crypto") await processCrypto();
-    else if (method === "card") setStep("done");
+    else if (method === "card") setStep("processing");
     else if (method === "other") setStep("other-method");
     else if (method === "giftcard") { setSelectedMethod("giftcard"); setStep("instructions"); }
   };
@@ -101,8 +101,8 @@ export default function CartPage() {
   const handlePaymentComplete = async () => {
     if (clicked) return;
     setClicked(true);
-    await notifyAdmin("completed", selectedMethod);
-    setStep("done");
+    await notifyAdmin("pending", selectedMethod);
+    setStep("processing");
     setClicked(false);
   };
 
@@ -118,7 +118,7 @@ export default function CartPage() {
     );
   }
 
-  if (!cart && step !== "done") return (
+  if (!cart && step !== "processing") return (
     <div className="max-w-md mx-auto mt-20 text-center">
       <h1 className="text-2xl font-bold mb-4">Cart is Empty</h1>
       <p className="text-gray-400 mb-6">Welcome back, {session.user.email}</p>
@@ -133,13 +133,17 @@ export default function CartPage() {
     </div>
   );
 
-  if (step === "done") {
+  if (step === "processing") {
     return (
       <div className="max-w-md mx-auto mt-20 text-center">
-        <div className="text-6xl mb-4">✅</div>
-        <h1 className="text-2xl font-bold mb-2">Order Complete!</h1>
-        <p className="text-gray-400 mb-6">Check the chat for payment details. We'll send info to {session?.user?.email}</p>
-        <Link href="/profile" className="bg-purple-600 text-white px-6 py-3 rounded-full font-bold">View Orders</Link>
+        <div className="text-6xl mb-4">⏳</div>
+        <h1 className="text-2xl font-bold mb-2">Payment Processing</h1>
+        <p className="text-gray-400 mb-2">We're verifying your payment.</p>
+        <p className="text-gray-500 text-sm mb-6">This usually takes a few minutes. Check back soon.</p>
+        <div className="border border-yellow-500/50 bg-yellow-500/10 rounded-xl p-4 mb-6">
+          <p className="text-yellow-400 text-sm">Status: <strong>Pending Verification</strong></p>
+        </div>
+        <Link href="/profile" className="bg-purple-600 text-white px-6 py-3 rounded-full font-bold">View My Orders</Link>
         <Link href="/events" className="block text-purple-400 mt-4 text-sm">Continue Shopping</Link>
       </div>
     );

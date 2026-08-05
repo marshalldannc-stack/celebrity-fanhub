@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import ApproveButton from "./ApproveButton";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function PaymentRequestsPage() {
                 <th className="p-3 text-left">Event</th>
                 <th className="p-3 text-left">Amount</th>
                 <th className="p-3 text-left">Status</th>
+                <th className="p-3 text-left">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -38,6 +40,9 @@ export default async function PaymentRequestsPage() {
                     <span className={`px-2 py-1 rounded-full text-xs ${r.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : "bg-green-500/20 text-green-400"}`}>
                       {r.status}
                     </span>
+                  </td>
+                  <td className="p-3">
+                    {r.status === "pending" && <ApproveButton id={r.id} />}
                   </td>
                 </tr>
               ))}
