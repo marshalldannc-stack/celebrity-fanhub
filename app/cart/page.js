@@ -26,6 +26,7 @@ export default function CartPage() {
   const [step, setStep] = useState("cart");
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [clicked, setClicked] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -103,27 +104,30 @@ export default function CartPage() {
   };
 
   const handlePaymentComplete = async () => {
-    await fetch("/api/payment-requests", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: session?.user?.email || "guest",
-        method: selectedMethod?.id || "other",
-        amount: cart.total,
-        orderId: "ORD-" + Date.now().toString(36).toUpperCase(),
-        event: cart.event,
-      }),
-    });
+    if (clicked) return;
+    setClicked(true);
+    try {
+      await fetch("/api/payment-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: session?.user?.email || "guest",
+          method: selectedMethod?.id || "other",
+          amount: cart.total,
+          orderId: "ORD-" + Date.now().toString(36).toUpperCase(),
+          event: cart.event,
+        }),
+      });
+    } catch {}
     processOrder(selectedMethod?.id || "other");
   };
 
-  // Not logged in - show login prompt
   if (!session) {
     return (
       <div className="max-w-md mx-auto mt-20 text-center">
         <div className="text-5xl mb-4">🔒</div>
         <h1 className="text-2xl font-bold mb-4">Login Required</h1>
-        <p className="text-gray-400 mb-6">You need to login to view your cart and checkout. This helps us send your tickets and payment confirmations.</p>
+        <p className="text-gray-400 mb-6">You need to login to view your cart and checkout.</p>
         <Link href="/login" className="bg-purple-600 text-white px-8 py-3 rounded-full font-bold mr-3">Login</Link>
         <Link href="/signup" className="border border-white text-white px-8 py-3 rounded-full font-bold">Sign Up</Link>
       </div>
@@ -171,13 +175,13 @@ export default function CartPage() {
             </div>
           )}
         </div>
-        <button onClick={() => { if (typeof Tawk_API !== "undefined") Tawk_API.maximize(); return false; }} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold">
+        <button onClick={() => { if (typeof Tawk_API !== "undefined") Tawk_API.maximize(); return false; }} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-500">
           💬 Chat Support
         </button>
-        <button onClick={handlePaymentComplete} className="w-full mt-3 bg-green-600 text-white px-6 py-3 rounded-full font-bold">
-          ✅ I've Made Payment
+        <button onClick={handlePaymentComplete} disabled={clicked} className={`w-full mt-3 px-6 py-3 rounded-full font-bold text-white ${clicked ? "bg-gray-600" : "bg-green-600 hover:bg-green-500"}`}>
+          {clicked ? "⏳ Processing..." : "✅ I've Made Payment"}
         </button>
-        <button onClick={() => setStep("payment")} className="text-gray-400 mt-4 text-sm">← Back</button>
+        <button onClick={() => setStep("payment")} className="text-gray-400 mt-4 text-sm hover:text-white">← Back</button>
       </div>
     );
   }
@@ -189,13 +193,13 @@ export default function CartPage() {
         <p className="text-gray-400 text-center mb-6">Total: <span className="text-white font-bold text-xl">${cart.total}</span></p>
         <div className="grid grid-cols-2 gap-3">
           {otherMethods.map(m => (
-            <button key={m.id} onClick={() => selectOtherMethod(m)} className="border border-gray-700 rounded-xl p-4 hover:border-blue-500 transition text-center">
+            <button key={m.id} onClick={() => selectOtherMethod(m)} className="border border-gray-700 rounded-xl p-4 hover:border-blue-500 hover:bg-gray-800 transition text-center">
               <div className="text-3xl mb-2">{m.icon}</div>
               <p className="font-bold text-sm">{m.name}</p>
             </button>
           ))}
         </div>
-        <button onClick={() => setStep("payment")} className="text-gray-400 mt-4 text-sm">← Back</button>
+        <button onClick={() => setStep("payment")} className="text-gray-400 mt-4 text-sm hover:text-white">← Back</button>
       </div>
     );
   }
@@ -216,7 +220,7 @@ export default function CartPage() {
             </button>
           ))}
         </div>
-        <button onClick={() => setStep("cart")} className="text-gray-400 mt-4 text-sm">← Back to Cart</button>
+        <button onClick={() => setStep("cart")} className="text-gray-400 mt-4 text-sm hover:text-white">← Back to Cart</button>
       </div>
     );
   }
@@ -231,13 +235,13 @@ export default function CartPage() {
           <div><p className="font-bold">{item.name}</p><p className="text-sm text-gray-400">{item.qty} x ${item.price}</p></div>
           <div className="flex items-center gap-3">
             <p className="font-bold">${item.price * item.qty}</p>
-            <button onClick={() => removeItem(i)} className="text-red-400">✕</button>
+            <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-300">✕</button>
           </div>
         </div>
       ))}
       <p className="text-2xl font-bold mt-6">Total: ${cart.total}</p>
-      <button onClick={() => setStep("payment")} className="w-full mt-6 bg-purple-600 text-white px-6 py-3 rounded-full font-bold text-lg">Proceed to Payment</button>
-      <Link href="/events" className="block text-center text-purple-400 mt-4 text-sm">← Continue Shopping</Link>
+      <button onClick={() => setStep("payment")} className="w-full mt-6 bg-purple-600 text-white px-6 py-3 rounded-full font-bold text-lg hover:bg-purple-500">Proceed to Payment</button>
+      <Link href="/events" className="block text-center text-purple-400 mt-4 text-sm hover:text-purple-300">← Continue Shopping</Link>
     </div>
   );
 }
