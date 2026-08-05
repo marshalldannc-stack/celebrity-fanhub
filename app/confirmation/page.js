@@ -23,7 +23,7 @@ export default function ConfirmationPage() {
     <div className="max-w-md mx-auto mt-20 text-center">
       <div className="text-6xl mb-4">✅</div>
       <h1 className="text-2xl font-bold mb-2">Order Confirmed!</h1>
-      <p className="text-gray-400 mb-6">Thank you for your purchase.</p>
+      <p className="text-gray-400 mb-6">Thank you for your purchase. We'll send payment details to your email.</p>
       
       <div className="border border-gray-700 rounded-xl p-6 text-left space-y-3">
         <div className="flex justify-between">
@@ -45,10 +45,13 @@ export default function ConfirmationPage() {
           <span>Total</span>
           <span className="text-purple-400">${order.total}</span>
         </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">Payment Method</span>
+          <span>{order.paymentMethod}</span>
+        </div>
       </div>
 
-      <p className="text-gray-500 text-sm mt-4">A confirmation email will be sent shortly.</p>
-      <Link href="/profile" className="inline-block mt-6 bg-purple-600 text-white px-6 py-3 rounded-full font-bold">View My Profile</Link>
+      <Link href="/profile" className="inline-block mt-6 bg-purple-600 text-white px-6 py-3 rounded-full font-bold">View My Orders</Link>
     </div>
   );
 }
