@@ -24,7 +24,7 @@ export default function MerchPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         {items.map(item => (
           <div key={item.id} className="border border-gray-700 rounded-xl p-4 hover:border-purple-500 transition text-center">
-            <div className="text-5xl mb-3">👕</div>
+            {item.image ? <img src={item.image} className="w-full h-40 object-cover rounded-lg mb-3" /> : <div className="text-5xl mb-3">👕</div>}
             <p className="text-xs text-gray-400">{item.category}</p>
             <h3 className="font-bold mt-1">{item.name}</h3>
             <p className="text-purple-400 font-bold mt-2">${item.price}</p>

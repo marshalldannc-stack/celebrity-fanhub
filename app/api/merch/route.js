@@ -18,10 +18,12 @@ export async function POST(request) {
         name: body.name,
         price: Number(body.price),
         category: body.category || "",
+        description: body.description || "",
+        image: body.image || null,
       },
     });
     return NextResponse.json(item);
   } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: "Create failed" }, { status: 500 });
   }
 }
