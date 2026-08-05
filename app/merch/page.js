@@ -1,22 +1,14 @@
-"use client";
-import { useState, useEffect } from "react";
+import prisma from "@/lib/prisma";
+import AddToCartButton from "./AddToCartButton";
 
-export default function MerchPage() {
-  const [items, setItems] = useState([]);
+export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
-  useEffect(() => {
-    fetch("/api/merch").then(r => r.json()).then(setItems);
-  }, []);
-
-  const addToCart = (item) => {
-    const cart = JSON.parse(localStorage.getItem("cart") || '{"items":[],"total":0,"event":"Merch"}');
-    const existing = cart.items.find(i => i.id === item.id);
-    if (existing) existing.qty += 1;
-    else cart.items.push({ ...item, qty: 1 });
-    cart.total = cart.items.reduce((sum, i) => sum + i.price * i.qty, 0);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${item.name} added to cart!`);
-  };
+export default async function MerchPage() {
+  let items = [];
+  try {
+    items = await prisma.merchItem.findMany({ orderBy: { createdAt: "desc" } });
+  } catch {}
 
   return (
     <div>
@@ -28,7 +20,7 @@ export default function MerchPage() {
             <p className="text-xs text-gray-400">{item.category}</p>
             <h3 className="font-bold mt-1">{item.name}</h3>
             <p className="text-purple-400 font-bold mt-2">${item.price}</p>
-            <button onClick={() => addToCart(item)} className="mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-bold w-full">Add to Cart</button>
+            <AddToCartButton item={item} />
           </div>
         ))}
       </div>

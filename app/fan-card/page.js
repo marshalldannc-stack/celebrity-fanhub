@@ -1,51 +1,46 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import prisma from "@/lib/prisma";
+import JoinButton from "./JoinButton";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 const defaultTiers = [
-  { name: "Bronze", price: 0, emoji: "🥉", perks: ["Digital Card", "Newsletter Access"], image: "" },
-  { name: "Silver", price: 19, emoji: "🥈", perks: ["Everything in Bronze", "5% Merch Discount", "Early Access Codes"], image: "" },
-  { name: "Gold", price: 49, emoji: "🌟", perks: ["Everything in Silver", "10% Merch Discount", "Presale Access", "Physical Card"], image: "" },
-  { name: "Platinum", price: 99, emoji: "💎", perks: ["Everything in Gold", "VIP Meet & Greet", "Signed Merch", "Exclusive Content"], image: "" },
-  { name: "Diamond", price: 249, emoji: "👑", perks: ["Everything in Platinum", "Backstage Pass", "Personal Video Message", "Lifetime Access"], image: "" },
+  { name: "Bronze", price: 299, emoji: "🥉", perks: ["Official digital fan card", "Exclusive updates", "Behind-the-scenes content", "Member-only newsletter", "Early ticket access"], image: "" },
+  { name: "Silver", price: 549, emoji: "🥈", perks: ["Everything in Bronze", "Priority event access", "10% merch discount", "Exclusive digital content", "Member-only giveaways", "Birthday shoutout"], image: "" },
+  { name: "Gold", price: 950, emoji: "🌟", perks: ["Everything in Silver", "Front Row Access", "20% merch discount", "Signed collectible (annual)", "Virtual Q&A sessions", "Exclusive merch drop"], image: "" },
+  { name: "Platinum", price: 1600, emoji: "💎", perks: ["Everything in Gold", "Meet-and-Greet", "Signed memorabilia", "VIP event access", "Personal video message", "Premium merch package", "Concierge support"], image: "" },
+  { name: "Diamond", price: 2499, emoji: "👑", perks: ["Everything in Platinum", "Backstage access", "Private meet-up (annual)", "Lifetime recognition", "Custom collectible", "First access to everything", "One-of-a-kind signed item"], image: "" },
 ];
 
-export default function FanCardPage() {
-  const router = useRouter();
-  const [tiers, setTiers] = useState(defaultTiers);
+const taglines = ["Real Stories. Real Connections.", "Be Part of the Legend.", "Front Row Access.", "Join the Legacy.", "A Comedy Icon. A Timeless Legend."];
 
-  useEffect(() => {
-    fetch("/api/fan-cards").then(r => r.json()).then(data => {
-      if (data && data.length > 0) setTiers(data);
-    });
-  }, []);
+async function getTiers() {
+  try {
+    const row = await prisma.siteSetting.findUnique({ where: { key: "fanCardTiers" } });
+    if (row?.value) return JSON.parse(row.value);
+  } catch {}
+  return defaultTiers;
+}
 
-  const join = (tier) => {
-    const cart = {
-      items: [{ id: tier.name, name: `${tier.name} Fan Card`, price: tier.price, qty: 1 }],
-      total: tier.price,
-      event: `${tier.name} Fan Card - Monthly`,
-    };
-    localStorage.setItem("cart", JSON.stringify(cart));
-    router.push("/cart");
-  };
+export default async function FanCardPage() {
+  const tiers = await getTiers();
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-2">Fan Membership Card</h1>
-      <p className="text-gray-400 mb-8">Get your exclusive digital fan card with special perks.</p>
+    <div className="max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-2 text-center">Matt Rife Fan Card</h1>
+      <p className="text-gray-400 text-center mb-2">Choose Your Access. Join the Legacy.</p>
+      <p className="text-gray-500 text-sm text-center mb-8">All plans billed annually. Cancel anytime.</p>
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {tiers.map((tier, i) => (
-          <div key={i} className="border border-gray-700 rounded-xl p-4 text-center">
-            {tier.image ? <img src={tier.image} className="w-full h-32 object-cover rounded-lg mb-3" /> : <div className="text-4xl mb-3">{tier.emoji}</div>}
+          <div key={i} className={`border rounded-xl p-5 text-center ${i === 4 ? "border-pink-500 bg-pink-500/10" : i === 3 ? "border-purple-500 bg-purple-500/10" : "border-gray-700"}`}>
+            {tier.image ? <img src={tier.image} className="w-full h-32 object-cover rounded-lg mb-3" /> : <div className="text-5xl mb-3">{tier.emoji}</div>}
             <h2 className="text-lg font-bold">{tier.name}</h2>
-            <p className="text-xl font-bold mt-1">{tier.price === 0 ? "Free" : `$${tier.price}/mo`}</p>
-            <ul className="text-gray-400 text-xs mt-3 space-y-1 text-left">
-              {tier.perks.map((p, j) => <li key={j}>✓ {p}</li>)}
+            <p className="text-xs text-gray-400 italic mt-1">"{taglines[i]}"</p>
+            <p className="text-2xl font-bold mt-2 text-purple-400">${tier.price}<span className="text-sm text-gray-400">/yr</span></p>
+            <ul className="text-gray-400 text-xs mt-3 space-y-1.5 text-left">
+              {tier.perks.map((p, j) => <li key={j} className="flex gap-2"><span>✓</span> {p}</li>)}
             </ul>
-            <button onClick={() => join(tier)} className={`mt-4 w-full py-2 rounded-full text-sm font-bold ${tier.price === 0 ? "border border-white text-white" : "bg-white text-black"}`}>
-              {tier.price === 0 ? "Get Free" : "Join"}
-            </button>
+            <JoinButton tier={tier} />
           </div>
         ))}
       </div>
