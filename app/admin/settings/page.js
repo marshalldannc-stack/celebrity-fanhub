@@ -8,6 +8,9 @@ export default function SettingsPage() {
     logo: "",
     bio: "Official Fan Hub — Events, Merch & Exclusive Content",
     primaryColor: "purple",
+    eventsImage: "",
+    fanCardImage: "",
+    merchImage: "",
   });
   const [saved, setSaved] = useState(false);
 
@@ -51,6 +54,21 @@ export default function SettingsPage() {
           <label className="text-gray-400 text-sm">Hero Background Image</label>
           <input type="file" accept="image/*" onChange={(e) => handleImage(e, "heroImage")} className="w-full text-white text-sm mt-1" />
           {settings.heroImage && <img src={settings.heroImage} className="h-32 rounded mt-2" />}
+        </div>
+        <div>
+          <label className="text-gray-400 text-sm">Events Section Image</label>
+          <input type="file" accept="image/*" onChange={(e) => handleImage(e, "eventsImage")} className="w-full text-white text-sm mt-1" />
+          {settings.eventsImage && <img src={settings.eventsImage} className="h-16 rounded mt-2" />}
+        </div>
+        <div>
+          <label className="text-gray-400 text-sm">Fan Card Section Image</label>
+          <input type="file" accept="image/*" onChange={(e) => handleImage(e, "fanCardImage")} className="w-full text-white text-sm mt-1" />
+          {settings.fanCardImage && <img src={settings.fanCardImage} className="h-16 rounded mt-2" />}
+        </div>
+        <div>
+          <label className="text-gray-400 text-sm">Merch Section Image</label>
+          <input type="file" accept="image/*" onChange={(e) => handleImage(e, "merchImage")} className="w-full text-white text-sm mt-1" />
+          {settings.merchImage && <img src={settings.merchImage} className="h-16 rounded mt-2" />}
         </div>
         <div>
           <label className="text-gray-400 text-sm">Logo</label>

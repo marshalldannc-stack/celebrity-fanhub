@@ -8,6 +8,9 @@ export default function HomePage() {
     artistName: "Artist Name",
     heroImage: "",
     bio: "Official Fan Hub — Events, Merch & Exclusive Content",
+    eventsImage: "",
+    fanCardImage: "",
+    merchImage: "",
   });
 
   useEffect(() => {
@@ -34,23 +37,29 @@ export default function HomePage() {
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
-        <div className="border border-gray-700 rounded-xl p-6 text-center hover:border-purple-500 transition">
-          <div className="text-4xl mb-3">🎵</div>
-          <h3 className="font-bold text-lg">Events & Tickets</h3>
-          <p className="text-gray-400 text-sm mt-2">Get tickets to upcoming shows and meet & greets.</p>
-          <Link href="/events" className="text-purple-400 text-sm mt-4 inline-block">Browse Events →</Link>
+        <div className="border border-gray-700 rounded-xl overflow-hidden hover:border-purple-500 transition">
+          {settings.eventsImage ? <img src={settings.eventsImage} className="w-full h-40 object-cover" /> : <div className="w-full h-40 bg-gray-800 flex items-center justify-center text-5xl">🎵</div>}
+          <div className="p-6 text-center">
+            <h3 className="font-bold text-lg">Events & Tickets</h3>
+            <p className="text-gray-400 text-sm mt-2">Get tickets to upcoming shows and meet & greets.</p>
+            <Link href="/events" className="text-purple-400 text-sm mt-4 inline-block">Browse Events →</Link>
+          </div>
         </div>
-        <div className="border border-gray-700 rounded-xl p-6 text-center hover:border-purple-500 transition">
-          <div className="text-4xl mb-3">💳</div>
-          <h3 className="font-bold text-lg">Fan Card</h3>
-          <p className="text-gray-400 text-sm mt-2">Get your exclusive digital fan card with perks.</p>
-          <Link href="/fan-card" className="text-purple-400 text-sm mt-4 inline-block">Get Yours →</Link>
+        <div className="border border-gray-700 rounded-xl overflow-hidden hover:border-purple-500 transition">
+          {settings.fanCardImage ? <img src={settings.fanCardImage} className="w-full h-40 object-cover" /> : <div className="w-full h-40 bg-gray-800 flex items-center justify-center text-5xl">💳</div>}
+          <div className="p-6 text-center">
+            <h3 className="font-bold text-lg">Fan Card</h3>
+            <p className="text-gray-400 text-sm mt-2">Get your exclusive digital fan card with perks.</p>
+            <Link href="/fan-card" className="text-purple-400 text-sm mt-4 inline-block">Get Yours →</Link>
+          </div>
         </div>
-        <div className="border border-gray-700 rounded-xl p-6 text-center hover:border-purple-500 transition">
-          <div className="text-4xl mb-3">👕</div>
-          <h3 className="font-bold text-lg">Merch Store</h3>
-          <p className="text-gray-400 text-sm mt-2">Exclusive clothing, accessories & more.</p>
-          <Link href="/merch" className="text-purple-400 text-sm mt-4 inline-block">Shop Now →</Link>
+        <div className="border border-gray-700 rounded-xl overflow-hidden hover:border-purple-500 transition">
+          {settings.merchImage ? <img src={settings.merchImage} className="w-full h-40 object-cover" /> : <div className="w-full h-40 bg-gray-800 flex items-center justify-center text-5xl">👕</div>}
+          <div className="p-6 text-center">
+            <h3 className="font-bold text-lg">Merch Store</h3>
+            <p className="text-gray-400 text-sm mt-2">Exclusive clothing, accessories & more.</p>
+            <Link href="/merch" className="text-purple-400 text-sm mt-4 inline-block">Shop Now →</Link>
+          </div>
         </div>
       </section>
 
