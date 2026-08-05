@@ -6,16 +6,23 @@ import "./globals.css";
 
 function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const links = [
+    { href: "/events", label: "Events" },
+    { href: "/merch", label: "Merch" },
+    { href: "/fan-card", label: "Fan Card" },
+    { href: "/gallery", label: "Gallery" },
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
+    { href: "/updates", label: "Updates" },
+  ];
 
   return (
     <nav className="p-4 border-b border-gray-800">
       <div className="flex justify-between items-center">
         <a href="/" className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">FanHub</a>
         <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-white text-2xl">☰</button>
-        <div className="hidden md:flex space-x-4 text-sm">
-          <a href="/events">Events</a>
-          <a href="/merch">Merch</a>
-          <a href="/fan-card">Fan Card</a>
+        <div className="hidden md:flex space-x-4 text-sm items-center">
+          {links.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}
           <a href="/cart">Cart</a>
           <a href="/profile">Profile</a>
           <a href="/login">Login</a>
@@ -24,9 +31,7 @@ function NavBar() {
       </div>
       {menuOpen && (
         <div className="md:hidden mt-4 flex flex-col space-y-3 text-sm">
-          <a href="/events" onClick={() => setMenuOpen(false)}>Events</a>
-          <a href="/merch" onClick={() => setMenuOpen(false)}>Merch</a>
-          <a href="/fan-card" onClick={() => setMenuOpen(false)}>Fan Card</a>
+          {links.map(l => <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)}>{l.label}</a>)}
           <a href="/cart" onClick={() => setMenuOpen(false)}>Cart</a>
           <a href="/profile" onClick={() => setMenuOpen(false)}>Profile</a>
           <a href="/login" onClick={() => setMenuOpen(false)}>Login</a>
