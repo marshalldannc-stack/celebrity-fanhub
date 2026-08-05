@@ -26,9 +26,19 @@ export default function AdminPage() {
           <Link href="/admin/gallery" className="text-purple-400 text-sm mt-2 block">Manage Gallery →</Link>
         </div>
         <div className="border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold">Users</h2>
+          <p className="text-gray-400 text-sm mt-2">View registered users</p>
+          <Link href="/admin/users" className="text-purple-400 text-sm mt-2 block">View Users →</Link>
+        </div>
+        <div className="border border-gray-700 rounded-xl p-6">
           <h2 className="text-lg font-bold">Subscribers</h2>
           <p className="text-gray-400 text-sm mt-2">View newsletter subscribers</p>
           <Link href="/admin/subscribers" className="text-purple-400 text-sm mt-2 block">View Subscribers →</Link>
+        </div>
+        <div className="border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold">Payment Requests</h2>
+          <p className="text-gray-400 text-sm mt-2">View customer payment requests</p>
+          <Link href="/admin/payments" className="text-purple-400 text-sm mt-2 block">View Requests →</Link>
         </div>
         <div className="border border-purple-500 rounded-xl p-6 bg-purple-500/10">
           <h2 className="text-lg font-bold">Site Settings</h2>
