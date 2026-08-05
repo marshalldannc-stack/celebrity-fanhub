@@ -7,6 +7,7 @@ export default function SettingsPage() {
     heroImage: "",
     logo: "",
     bio: "",
+    news: "",
     eventsImage: "",
     fanCardImage: "",
     merchImage: "",
@@ -14,7 +15,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetch("/api/settings").then(r => r.json()).then(data => {
-      if (data) setSettings(data);
+      if (data) setSettings(prev => ({ ...prev, ...data }));
     });
   }, []);
 
@@ -51,6 +52,7 @@ export default function SettingsPage() {
       <div className="space-y-4">
         <input value={settings.artistName} onChange={(e) => setSettings({ ...settings, artistName: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Artist Name" />
         <input value={settings.bio} onChange={(e) => setSettings({ ...settings, bio: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Bio" />
+        <textarea value={settings.news || ""} onChange={(e) => setSettings({ ...settings, news: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="News / Updates (shown on homepage)" rows="3" />
         <label className="text-gray-400 text-sm block">Hero Image <input type="file" accept="image/*" onChange={(e) => handleImage(e, "heroImage")} className="mt-1" /></label>
         {settings.heroImage && <img src={settings.heroImage} className="h-20 rounded" />}
         <label className="text-gray-400 text-sm block">Events Image <input type="file" accept="image/*" onChange={(e) => handleImage(e, "eventsImage")} className="mt-1" /></label>

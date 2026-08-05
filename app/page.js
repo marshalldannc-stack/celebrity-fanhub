@@ -4,7 +4,7 @@ import Link from "next/link";
 import Newsletter from "@/components/Newsletter";
 
 export default function HomePage() {
-  const [settings, setSettings] = useState({ artistName: "", heroImage: "", bio: "", eventsImage: "", fanCardImage: "", merchImage: "" });
+  const [settings, setSettings] = useState({ artistName: "", heroImage: "", bio: "", news: "", eventsImage: "", fanCardImage: "", merchImage: "" });
 
   useEffect(() => {
     fetch("/api/settings").then(r => r.json()).then(data => {
@@ -22,6 +22,14 @@ export default function HomePage() {
           <Link href="/merch" className="border border-white text-white px-8 py-4 rounded-full font-bold text-lg">Shop Merch</Link>
         </div>
       </section>
+
+      {settings.news && (
+        <section className="max-w-2xl mx-auto mt-8 border border-purple-500/50 bg-purple-500/10 rounded-xl p-6 text-center">
+          <p className="text-purple-400 text-sm font-bold mb-2">📢 Latest News</p>
+          <p className="text-gray-300 whitespace-pre-line">{settings.news}</p>
+        </section>
+      )}
+
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
         <Link href="/events" className="border border-gray-700 rounded-xl overflow-hidden hover:border-purple-500 transition">
           {settings.eventsImage ? <img src={settings.eventsImage} className="w-full h-40 object-cover" /> : <div className="w-full h-40 bg-gray-800 flex items-center justify-center text-5xl">🎵</div>}
