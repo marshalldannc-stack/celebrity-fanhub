@@ -22,6 +22,7 @@ model Event {
   title       String
   description String?
   date        DateTime
+  time        String?
   venue       String
   city        String
   image       String?

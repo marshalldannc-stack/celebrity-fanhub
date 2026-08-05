@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+const tierNames = ["Bronze", "Silver", "Gold", "VIP"];
+
 export async function PUT(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json();
+    const prices = body.prices || [49, 99, 149, 199];
     
     await prisma.ticketType.deleteMany({ where: { eventId: id } });
     
@@ -14,20 +17,22 @@ export async function PUT(request, { params }) {
         title: body.title,
         description: body.description || "",
         date: new Date(body.date),
+        time: body.time || "",
         venue: body.venue || "",
         city: body.city || "",
         image: body.image || null,
         ticketTypes: {
-          create: [
-            { name: "General Admission", price: Number(body.gaPrice) || 49, quantity: 100 },
-            { name: "VIP", price: Number(body.vipPrice) || 149, quantity: 50 },
-          ],
+          create: prices.map((price, i) => ({
+            name: tierNames[i],
+            price: Number(price),
+            quantity: 100,
+          })),
         },
       },
       include: { ticketTypes: true },
     });
     return NextResponse.json(event);
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Update failed" }, { status: 500 });
   }
 }
@@ -38,7 +43,7 @@ export async function DELETE(request, { params }) {
     await prisma.ticketType.deleteMany({ where: { eventId: id } });
     await prisma.event.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Delete failed" }, { status: 500 });
   }
 }
