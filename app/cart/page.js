@@ -32,6 +32,12 @@ export default function CartPage() {
     if (saved) setCart(JSON.parse(saved));
   }, []);
 
+  const openChat = (method) => {
+    if (typeof Tawk_API !== "undefined") {
+      Tawk_API.maximize();
+    }
+  };
+
   const notifyAdmin = async (type, method) => {
     try {
       await fetch("/api/payment-requests", {
@@ -97,6 +103,7 @@ export default function CartPage() {
   const selectOtherMethod = async (method) => {
     setSelectedMethod(method);
     await notifyAdmin("request", method);
+    openChat(method);
     setStep("instructions");
   };
 
@@ -140,7 +147,7 @@ export default function CartPage() {
       <div className="max-w-md mx-auto mt-20 text-center">
         <div className="text-6xl mb-4">✅</div>
         <h1 className="text-2xl font-bold mb-2">Order Complete!</h1>
-        <p className="text-gray-400 mb-6">Payment details will be sent to {session?.user?.email}</p>
+        <p className="text-gray-400 mb-6">Check the chat for payment details. We'll send info to {session?.user?.email}</p>
         <Link href="/profile" className="bg-purple-600 text-white px-6 py-3 rounded-full font-bold">View Orders</Link>
         <Link href="/events" className="block text-purple-400 mt-4 text-sm">Continue Shopping</Link>
       </div>
@@ -153,22 +160,21 @@ export default function CartPage() {
         <div className="text-5xl mb-4">📩</div>
         <h1 className="text-2xl font-bold mb-2">Payment Instructions</h1>
         <p className="text-gray-400 mb-2">Hi {session.user.email}</p>
-        <p className="text-gray-400 mb-6">
-          {selectedMethod?.name} Payment — Payment details will be sent to your email.
-        </p>
+        <p className="text-gray-400 mb-2">{selectedMethod?.name} Payment — <strong>${cart.total}</strong></p>
+        <p className="text-gray-400 text-sm mb-6">Event: {cart.event}</p>
         <div className="border border-gray-700 rounded-xl p-6 text-left space-y-4 text-sm">
           <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4">
             <p className="font-bold text-yellow-400 mb-2">⚠️ Important — Please Read</p>
             <ul className="text-gray-300 space-y-2">
-              <li>1. Payment details will be sent to <strong>{session.user.email}</strong></li>
+              <li>1. We'll send payment details in the chat below</li>
               <li>2. This is a <strong>temporary account</strong> — use only for this payment</li>
               <li>3. After sending payment, <strong>keep your receipt</strong></li>
               <li>4. Your order will be confirmed once payment is verified</li>
             </ul>
           </div>
         </div>
-        <button onClick={() => { if (typeof Tawk_API !== "undefined") Tawk_API.maximize(); return false; }} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-500">
-          💬 Chat Support
+        <button onClick={openChat} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-500 text-center">
+          💬 Open Chat — We'll send payment details here
         </button>
         <button onClick={handlePaymentComplete} disabled={clicked} className={`w-full mt-3 px-6 py-3 rounded-full font-bold text-white ${clicked ? "bg-gray-600" : "bg-green-600 hover:bg-green-500"}`}>
           {clicked ? "⏳ Processing..." : "✅ I've Made Payment"}
