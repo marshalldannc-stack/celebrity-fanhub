@@ -17,6 +17,7 @@ export default function RootLayout({ children }) {
               <a href="/merch">Merch</a>
               <a href="/fan-card">Fan Card</a>
               <a href="/cart">Cart</a>
+              <a href="/profile">Profile</a>
               <a href="/login">Login</a>
               <a href="/signup" className="bg-purple-600 text-white px-4 py-2 rounded-full">Sign Up</a>
             </div>
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
               <a href="/merch" onClick={() => setMenuOpen(false)}>Merch</a>
               <a href="/fan-card" onClick={() => setMenuOpen(false)}>Fan Card</a>
               <a href="/cart" onClick={() => setMenuOpen(false)}>Cart</a>
+              <a href="/profile" onClick={() => setMenuOpen(false)}>Profile</a>
               <a href="/login" onClick={() => setMenuOpen(false)}>Login</a>
               <a href="/signup" onClick={() => setMenuOpen(false)} className="bg-purple-600 text-white px-4 py-2 rounded-full w-fit">Sign Up</a>
             </div>
