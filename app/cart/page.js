@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const paymentMethods = [
   { id: "crypto", name: "₿ Cryptocurrency", desc: "Pay with Bitcoin, Ethereum, USDT & more", icon: "₿", color: "border-orange-500" },
@@ -20,6 +21,7 @@ const otherMethods = [
 ];
 
 export default function CartPage() {
+  const { data: session } = useSession();
   const [cart, setCart] = useState(null);
   const [step, setStep] = useState("cart");
   const [selectedMethod, setSelectedMethod] = useState(null);
@@ -50,7 +52,7 @@ export default function CartPage() {
     });
     const data = await res.json();
     if (data.invoice_url) {
-      const order = { id: orderId, event: cart.event, items: cart.items, total: cart.total, status: "Processing", paymentMethod: "crypto", date: new Date().toISOString() };
+      const order = { id: orderId, event: cart.event, items: cart.items, total: cart.total, status: "Processing", paymentMethod: "crypto", date: new Date().toISOString(), email: session?.user?.email || "" };
       const orders = JSON.parse(localStorage.getItem("orders") || "[]");
       orders.push(order);
       localStorage.setItem("orders", JSON.stringify(orders));
@@ -72,6 +74,7 @@ export default function CartPage() {
       status: "Completed",
       paymentMethod: method,
       date: new Date().toISOString(),
+      email: session?.user?.email || "",
     };
     const orders = JSON.parse(localStorage.getItem("orders") || "[]");
     orders.push(order);
@@ -100,27 +103,37 @@ export default function CartPage() {
   };
 
   const handlePaymentComplete = async () => {
-    const userEmail = localStorage.getItem("userEmail") || prompt("Enter your email for payment details:");
-    if (userEmail) {
-      localStorage.setItem("userEmail", userEmail);
-      await fetch("/api/payment-requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: userEmail,
-          method: selectedMethod?.id || "other",
-          amount: cart.total,
-          orderId: "ORD-" + Date.now().toString(36).toUpperCase(),
-          event: cart.event,
-        }),
-      });
-    }
+    await fetch("/api/payment-requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: session?.user?.email || "guest",
+        method: selectedMethod?.id || "other",
+        amount: cart.total,
+        orderId: "ORD-" + Date.now().toString(36).toUpperCase(),
+        event: cart.event,
+      }),
+    });
     processOrder(selectedMethod?.id || "other");
   };
+
+  // Not logged in - show login prompt
+  if (!session) {
+    return (
+      <div className="max-w-md mx-auto mt-20 text-center">
+        <div className="text-5xl mb-4">🔒</div>
+        <h1 className="text-2xl font-bold mb-4">Login Required</h1>
+        <p className="text-gray-400 mb-6">You need to login to view your cart and checkout. This helps us send your tickets and payment confirmations.</p>
+        <Link href="/login" className="bg-purple-600 text-white px-8 py-3 rounded-full font-bold mr-3">Login</Link>
+        <Link href="/signup" className="border border-white text-white px-8 py-3 rounded-full font-bold">Sign Up</Link>
+      </div>
+    );
+  }
 
   if (!cart) return (
     <div className="max-w-md mx-auto mt-20 text-center">
       <h1 className="text-2xl font-bold mb-4">Cart is Empty</h1>
+      <p className="text-gray-400 mb-6">Welcome back, {session.user.email}</p>
       <Link href="/events" className="bg-purple-600 text-white px-6 py-3 rounded-full">Browse Events</Link>
     </div>
   );
@@ -137,6 +150,7 @@ export default function CartPage() {
       <div className="max-w-md mx-auto mt-10 text-center">
         <div className="text-5xl mb-4">📩</div>
         <h1 className="text-2xl font-bold mb-2">Payment Instructions</h1>
+        <p className="text-gray-400 mb-2">Hi {session.user.email}</p>
         <p className="text-gray-400 mb-6">
           {selectedMethod === "giftcard" ? "Gift Card Payment" : `${selectedMethod?.name} Payment`}
         </p>
@@ -144,7 +158,7 @@ export default function CartPage() {
           <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4">
             <p className="font-bold text-yellow-400 mb-2">⚠️ Important — Please Read</p>
             <ul className="text-gray-300 space-y-2">
-              <li>1. Payment details will be sent to <strong>your registered email</strong></li>
+              <li>1. Payment details will be sent to <strong>{session.user.email}</strong></li>
               <li>2. This is a <strong>temporary account</strong> — use only for this payment</li>
               <li>3. After sending payment, <strong>keep your receipt</strong></li>
               <li>4. Your order will be confirmed once payment is verified</li>
@@ -154,7 +168,6 @@ export default function CartPage() {
             <div className="bg-purple-500/10 border border-purple-500/50 rounded-xl p-4">
               <p className="font-bold text-purple-400 mb-2">🎁 Send Gift Card To:</p>
               <p className="text-white font-mono text-lg">marshalldannc@gmail.com</p>
-              <p className="text-gray-400 text-xs mt-2">Include your Order ID in the email for faster processing.</p>
             </div>
           )}
         </div>
@@ -211,6 +224,7 @@ export default function CartPage() {
   return (
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
+      <p className="text-gray-400 text-sm mb-1">{session.user.email}</p>
       <p className="text-gray-400 mb-4">{cart.event}</p>
       {cart.items.map((item, i) => (
         <div key={i} className="flex justify-between py-3 border-b border-gray-700">
