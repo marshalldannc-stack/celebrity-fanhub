@@ -1,11 +1,17 @@
+"use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import prisma from "@/lib/prisma";
 
-export default async function EventsPage() {
-  let events = [];
-  try {
-    events = await prisma.event.findMany({ include: { ticketTypes: true }, orderBy: { date: "asc" } });
-  } catch {}
+export default function EventsPage() {
+  const [events, setEvents] = useState([]);
+
+  const loadEvents = async () => {
+    const res = await fetch("/api/events");
+    const data = await res.json();
+    setEvents(data);
+  };
+
+  useEffect(() => { loadEvents(); }, []);
 
   return (
     <div>
