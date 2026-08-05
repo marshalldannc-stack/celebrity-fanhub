@@ -93,3 +93,14 @@ model SiteSetting {
   key   String @unique
   value String
 }
+
+model PaymentRequest {
+  id        String   @id @default(cuid())
+  email     String
+  method    String
+  amount    Float
+  orderId   String
+  event     String
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+}
