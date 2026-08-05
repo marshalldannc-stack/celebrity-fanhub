@@ -6,7 +6,6 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     const body = await request.json();
     
-    // Delete old ticket types and create new ones
     await prisma.ticketType.deleteMany({ where: { eventId: id } });
     
     const event = await prisma.event.update({
@@ -18,8 +17,8 @@ export async function PUT(request, { params }) {
         city: body.city || "",
         ticketTypes: {
           create: [
-            { name: "General Admission", price: body.gaPrice || 49, quantity: 100 },
-            { name: "VIP", price: body.vipPrice || 149, quantity: 50 },
+            { name: "General Admission", price: Number(body.gaPrice) || 49, quantity: 100 },
+            { name: "VIP", price: Number(body.vipPrice) || 149, quantity: 50 },
           ],
         },
       },

@@ -8,8 +8,8 @@ export async function GET() {
       orderBy: { date: "asc" },
     });
     return NextResponse.json(events);
-  } catch (e) {
-    return NextResponse.json([], { status: 200 });
+  } catch {
+    return NextResponse.json([]);
   }
 }
 
@@ -24,8 +24,8 @@ export async function POST(request) {
         city: body.city || "",
         ticketTypes: {
           create: [
-            { name: "General Admission", price: 49, quantity: 100 },
-            { name: "VIP", price: 149, quantity: 50 },
+            { name: "General Admission", price: Number(body.gaPrice) || 49, quantity: 100 },
+            { name: "VIP", price: Number(body.vipPrice) || 149, quantity: 50 },
           ],
         },
       },
@@ -33,6 +33,6 @@ export async function POST(request) {
     });
     return NextResponse.json(event);
   } catch (e) {
-    return NextResponse.json({ error: "Failed to create" }, { status: 500 });
+    return NextResponse.json({ error: "Create failed" }, { status: 500 });
   }
 }
