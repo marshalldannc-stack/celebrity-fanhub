@@ -7,8 +7,13 @@ export default function SettingsPage() {
     heroImage: "",
     bio: "",
     news: "",
+    videoUrl: "",
+    instagram: "",
+    twitter: "",
+    youtube: "",
+    tiktok: "",
     newsletterTitle: "Join the Newsletter",
-    newsletterText: "Get exclusive updates on new music, tours, and merch drops.",
+    newsletterText: "Get exclusive updates.",
     eventsImage: "",
     fanCardImage: "",
     merchImage: "",
@@ -43,7 +48,7 @@ export default function SettingsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(settings),
     });
-    alert("Saved! Refresh the site to see changes.");
+    alert("Saved! Refresh site to see changes.");
   };
 
   return (
@@ -54,6 +59,17 @@ export default function SettingsPage() {
         <input value={settings.bio} onChange={(e) => setSettings({ ...settings, bio: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Short bio / tagline" />
         <textarea value={settings.news || ""} onChange={(e) => setSettings({ ...settings, news: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="Latest news / announcement" rows="3" />
         
+        <hr className="border-gray-700" />
+        <p className="text-gray-400 text-sm font-bold">Video Embed</p>
+        <input value={settings.videoUrl || ""} onChange={(e) => setSettings({ ...settings, videoUrl: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="YouTube embed URL (e.g. https://www.youtube.com/embed/...)" />
+
+        <hr className="border-gray-700" />
+        <p className="text-gray-400 text-sm font-bold">Social Media Links</p>
+        <input value={settings.instagram || ""} onChange={(e) => setSettings({ ...settings, instagram: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Instagram URL" />
+        <input value={settings.twitter || ""} onChange={(e) => setSettings({ ...settings, twitter: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Twitter / X URL" />
+        <input value={settings.youtube || ""} onChange={(e) => setSettings({ ...settings, youtube: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="YouTube URL" />
+        <input value={settings.tiktok || ""} onChange={(e) => setSettings({ ...settings, tiktok: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="TikTok URL" />
+
         <hr className="border-gray-700" />
         <p className="text-gray-400 text-sm font-bold">Newsletter Section</p>
         <input value={settings.newsletterTitle || ""} onChange={(e) => setSettings({ ...settings, newsletterTitle: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Newsletter title" />
