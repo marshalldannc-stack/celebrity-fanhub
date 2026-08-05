@@ -1,15 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,7 +18,41 @@
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
+  background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* All buttons interactive */
+button, a {
+  transition: all 0.2s ease;
+}
+
+button:active, a:active {
+  transform: scale(0.97);
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* Button click effect */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Input focus */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 0 1px #a855f7;
 }
