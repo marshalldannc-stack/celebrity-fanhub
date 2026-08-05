@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String?
+  fanCard   FanCard?
+  orders    Order[]
+  createdAt DateTime  @default(now())
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  venue       String
+  city        String
+  image       String?
+  ticketTypes TicketType[]
+  createdAt   DateTime    @default(now())
+}
+
+model TicketType {
+  id       String      @id @default(cuid())
+  eventId  String
+  event    Event       @relation(fields: [eventId], references: [id])
+  name     String
+  price    Float
+  quantity Int
+  sold     Int         @default(0)
+  items    OrderItem[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  status    String      @default("pending")
+  total     Float
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id           String     @id @default(cuid())
+  orderId      String
+  order        Order      @relation(fields: [orderId], references: [id])
+  ticketTypeId String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+  quantity     Int
+  price        Float
+}
+
+model FanCard {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  tier      String   @default("standard") // standard, gold, platinum
+  cardNumber String  @unique
+  qrCode    String?
+  createdAt DateTime @default(now())
+}
+
+model MerchItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  image       String?
+  category    String   // clothing, accessory, music, etc
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+}
