@@ -9,6 +9,8 @@ export default function AdminEvents() {
   const [date, setDate] = useState("");
   const [venue, setVenue] = useState("");
   const [city, setCity] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
   const [gaPrice, setGaPrice] = useState("49");
   const [vipPrice, setVipPrice] = useState("149");
 
@@ -19,8 +21,16 @@ export default function AdminEvents() {
 
   useEffect(() => { loadEvents(); }, []);
 
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setImage(reader.result);
+    reader.readAsDataURL(file);
+  };
+
   const resetForm = () => {
-    setTitle(""); setDate(""); setVenue(""); setCity("");
+    setTitle(""); setDate(""); setVenue(""); setCity(""); setDescription(""); setImage("");
     setGaPrice("49"); setVipPrice("149");
     setEditId(null); setShowForm(false);
   };
@@ -32,7 +42,7 @@ export default function AdminEvents() {
     await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, date, venue, city, gaPrice: Number(gaPrice), vipPrice: Number(vipPrice) }),
+      body: JSON.stringify({ title, date, venue, city, description, image, gaPrice: Number(gaPrice), vipPrice: Number(vipPrice) }),
     });
     resetForm();
     loadEvents();
@@ -44,6 +54,8 @@ export default function AdminEvents() {
     setDate(e.date?.split("T")[0] || "");
     setVenue(e.venue);
     setCity(e.city);
+    setDescription(e.description || "");
+    setImage(e.image || "");
     setGaPrice(e.ticketTypes?.[0]?.price || 49);
     setVipPrice(e.ticketTypes?.[1]?.price || 149);
     setShowForm(true);
@@ -72,6 +84,12 @@ export default function AdminEvents() {
             <input value={venue} onChange={(e) => setVenue(e.target.value)} className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Venue" />
             <input value={city} onChange={(e) => setCity(e.target.value)} className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="City" />
           </div>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="Description" rows="2" />
+          <div>
+            <label className="text-gray-400 text-sm">Event Image</label>
+            <input type="file" accept="image/*" onChange={handleImage} className="w-full text-white text-sm mt-1" />
+            {image && <img src={image} className="h-20 rounded mt-2" />}
+          </div>
           <div className="flex gap-2">
             <input value={gaPrice} onChange={(e) => setGaPrice(e.target.value)} type="number" className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="GA Price" />
             <input value={vipPrice} onChange={(e) => setVipPrice(e.target.value)} type="number" className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="VIP Price" />
@@ -85,12 +103,15 @@ export default function AdminEvents() {
       <div className="space-y-3">
         {events.map(event => (
           <div key={event.id} className="border border-gray-700 rounded-xl p-4 flex justify-between items-center">
-            <div>
-              <p className="font-bold">{event.title}</p>
-              <p className="text-gray-400 text-sm">{new Date(event.date).toLocaleDateString()} • {event.venue}, {event.city}</p>
-              <p className="text-purple-400 text-xs">
-                {event.ticketTypes?.map(t => `${t.name}: $${t.price}`).join(" | ") || "No tickets"}
-              </p>
+            <div className="flex gap-3 items-center">
+              {event.image && <img src={event.image} className="w-12 h-12 rounded-lg object-cover" />}
+              <div>
+                <p className="font-bold">{event.title}</p>
+                <p className="text-gray-400 text-sm">{new Date(event.date).toLocaleDateString()} • {event.venue}, {event.city}</p>
+                <p className="text-purple-400 text-xs">
+                  {event.ticketTypes?.map(t => `${t.name}: $${t.price}`).join(" | ") || "No tickets"}
+                </p>
+              </div>
             </div>
             <div className="flex gap-2">
               <button onClick={() => editEvent(event)} className="text-blue-400 text-sm">Edit</button>

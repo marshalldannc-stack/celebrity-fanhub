@@ -19,9 +19,11 @@ export async function POST(request) {
     const event = await prisma.event.create({
       data: {
         title: body.title,
+        description: body.description || "",
         date: new Date(body.date),
         venue: body.venue || "",
         city: body.city || "",
+        image: body.image || null,
         ticketTypes: {
           create: [
             { name: "General Admission", price: Number(body.gaPrice) || 49, quantity: 100 },
