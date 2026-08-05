@@ -3,20 +3,11 @@ import { useState, useEffect } from "react";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
-    artistName: "",
-    heroImage: "",
-    bio: "",
-    news: "",
-    videoUrl: "",
-    instagram: "",
-    twitter: "",
-    youtube: "",
-    tiktok: "",
-    newsletterTitle: "Join the Newsletter",
-    newsletterText: "Get exclusive updates.",
-    eventsImage: "",
-    fanCardImage: "",
-    merchImage: "",
+    artistName: "", heroImage: "", bio: "", news: "", videoUrl: "",
+    instagram: "", twitter: "", youtube: "", tiktok: "",
+    aboutStory: "", aboutAchievements: "", contactEmail: "", contactPhone: "",
+    newsletterTitle: "Join the Newsletter", newsletterText: "Get exclusive updates.",
+    eventsImage: "", fanCardImage: "", merchImage: "",
   });
 
   useEffect(() => {
@@ -32,10 +23,8 @@ export default function SettingsPage() {
     const ctx = canvas.getContext("2d");
     const img = new Image();
     img.onload = () => {
-      const w = 600;
-      const h = (img.height / img.width) * w;
-      canvas.width = w;
-      canvas.height = h;
+      const w = 600; const h = (img.height / img.width) * w;
+      canvas.width = w; canvas.height = h;
       ctx.drawImage(img, 0, 0, w, h);
       setSettings(prev => ({ ...prev, [field]: canvas.toDataURL("image/jpeg", 0.5) }));
     };
@@ -43,47 +32,45 @@ export default function SettingsPage() {
   };
 
   const save = async () => {
-    await fetch("/api/settings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(settings),
-    });
-    alert("Saved! Refresh site to see changes.");
+    await fetch("/api/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings) });
+    alert("Saved!");
   };
 
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Site Settings</h1>
       <div className="space-y-4">
-        <input value={settings.artistName} onChange={(e) => setSettings({ ...settings, artistName: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Celebrity / Artist Name" />
-        <input value={settings.bio} onChange={(e) => setSettings({ ...settings, bio: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Short bio / tagline" />
-        <textarea value={settings.news || ""} onChange={(e) => setSettings({ ...settings, news: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="Latest news / announcement" rows="3" />
-        
-        <hr className="border-gray-700" />
-        <p className="text-gray-400 text-sm font-bold">Video Embed</p>
-        <input value={settings.videoUrl || ""} onChange={(e) => setSettings({ ...settings, videoUrl: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="YouTube embed URL (e.g. https://www.youtube.com/embed/...)" />
+        <input value={settings.artistName} onChange={(e) => setSettings({ ...settings, artistName: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Celebrity Name" />
+        <input value={settings.bio} onChange={(e) => setSettings({ ...settings, bio: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Short bio" />
+        <textarea value={settings.news || ""} onChange={(e) => setSettings({ ...settings, news: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="Latest news" rows="3" />
 
-        <hr className="border-gray-700" />
-        <p className="text-gray-400 text-sm font-bold">Social Media Links</p>
+        <hr className="border-gray-700" /><p className="text-gray-400 text-sm font-bold">About Page</p>
+        <textarea value={settings.aboutStory || ""} onChange={(e) => setSettings({ ...settings, aboutStory: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="Life story / biography" rows="4" />
+        <textarea value={settings.aboutAchievements || ""} onChange={(e) => setSettings({ ...settings, aboutAchievements: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="Achievements (one per line)" rows="3" />
+
+        <hr className="border-gray-700" /><p className="text-gray-400 text-sm font-bold">Contact Page</p>
+        <input value={settings.contactEmail || ""} onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Contact email" />
+        <input value={settings.contactPhone || ""} onChange={(e) => setSettings({ ...settings, contactPhone: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Contact phone (optional)" />
+
+        <hr className="border-gray-700" /><p className="text-gray-400 text-sm font-bold">Video & Socials</p>
+        <input value={settings.videoUrl || ""} onChange={(e) => setSettings({ ...settings, videoUrl: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="YouTube embed URL" />
         <input value={settings.instagram || ""} onChange={(e) => setSettings({ ...settings, instagram: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Instagram URL" />
-        <input value={settings.twitter || ""} onChange={(e) => setSettings({ ...settings, twitter: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Twitter / X URL" />
+        <input value={settings.twitter || ""} onChange={(e) => setSettings({ ...settings, twitter: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Twitter URL" />
         <input value={settings.youtube || ""} onChange={(e) => setSettings({ ...settings, youtube: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="YouTube URL" />
         <input value={settings.tiktok || ""} onChange={(e) => setSettings({ ...settings, tiktok: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="TikTok URL" />
 
-        <hr className="border-gray-700" />
-        <p className="text-gray-400 text-sm font-bold">Newsletter Section</p>
+        <hr className="border-gray-700" /><p className="text-gray-400 text-sm font-bold">Newsletter</p>
         <input value={settings.newsletterTitle || ""} onChange={(e) => setSettings({ ...settings, newsletterTitle: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Newsletter title" />
         <input value={settings.newsletterText || ""} onChange={(e) => setSettings({ ...settings, newsletterText: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Newsletter description" />
 
-        <hr className="border-gray-700" />
-        <p className="text-gray-400 text-sm font-bold">Section Images</p>
-        <label className="text-gray-400 text-sm block">Hero Image <input type="file" accept="image/*" onChange={(e) => handleImage(e, "heroImage")} className="mt-1" /></label>
+        <hr className="border-gray-700" /><p className="text-gray-400 text-sm font-bold">Section Images</p>
+        <label className="text-gray-400 text-sm block">Hero <input type="file" accept="image/*" onChange={(e) => handleImage(e, "heroImage")} className="mt-1" /></label>
         {settings.heroImage && <img src={settings.heroImage} className="h-20 rounded" />}
-        <label className="text-gray-400 text-sm block">Events Image <input type="file" accept="image/*" onChange={(e) => handleImage(e, "eventsImage")} className="mt-1" /></label>
+        <label className="text-gray-400 text-sm block">Events <input type="file" accept="image/*" onChange={(e) => handleImage(e, "eventsImage")} className="mt-1" /></label>
         {settings.eventsImage && <img src={settings.eventsImage} className="h-20 rounded" />}
-        <label className="text-gray-400 text-sm block">Fan Card Image <input type="file" accept="image/*" onChange={(e) => handleImage(e, "fanCardImage")} className="mt-1" /></label>
+        <label className="text-gray-400 text-sm block">Fan Card <input type="file" accept="image/*" onChange={(e) => handleImage(e, "fanCardImage")} className="mt-1" /></label>
         {settings.fanCardImage && <img src={settings.fanCardImage} className="h-20 rounded" />}
-        <label className="text-gray-400 text-sm block">Merch Image <input type="file" accept="image/*" onChange={(e) => handleImage(e, "merchImage")} className="mt-1" /></label>
+        <label className="text-gray-400 text-sm block">Merch <input type="file" accept="image/*" onChange={(e) => handleImage(e, "merchImage")} className="mt-1" /></label>
         {settings.merchImage && <img src={settings.merchImage} className="h-20 rounded" />}
         <button onClick={save} className="w-full bg-purple-600 text-white px-6 py-3 rounded-full font-bold">Save All</button>
       </div>
