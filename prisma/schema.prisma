@@ -105,3 +105,22 @@ model PaymentRequest {
   status    String   @default("pending")
   createdAt DateTime @default(now())
 }
+
+model ReferralCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  clicks    Int      @default(0)
+  sales     Int      @default(0)
+  revenue   Float    @default(0)
+  createdAt DateTime @default(now())
+}
+
+model ReferralSale {
+  id        String   @id @default(cuid())
+  code      String
+  amount    Float
+  event     String
+  email     String
+  createdAt DateTime @default(now())
+}
