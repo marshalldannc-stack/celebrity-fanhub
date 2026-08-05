@@ -11,8 +11,9 @@ export default function HomePage() {
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem("siteSettings");
-    if (saved) setSettings(JSON.parse(saved));
+    fetch("/api/settings").then(r => r.json()).then(data => {
+      if (data) setSettings(data);
+    });
   }, []);
 
   return (

@@ -6,13 +6,15 @@ export default function SettingsPage() {
     artistName: "Artist Name",
     heroImage: "",
     logo: "",
-    primaryColor: "purple",
     bio: "Official Fan Hub — Events, Merch & Exclusive Content",
+    primaryColor: "purple",
   });
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("siteSettings");
-    if (saved) setSettings(JSON.parse(saved));
+    fetch("/api/settings").then(r => r.json()).then(data => {
+      if (data) setSettings(data);
+    });
   }, []);
 
   const handleImage = (e, field) => {
@@ -23,9 +25,14 @@ export default function SettingsPage() {
     reader.readAsDataURL(file);
   };
 
-  const save = () => {
-    localStorage.setItem("siteSettings", JSON.stringify(settings));
-    alert("Settings saved! Refresh the site to see changes.");
+  const save = async () => {
+    await fetch("/api/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(settings),
+    });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -60,7 +67,9 @@ export default function SettingsPage() {
             <option value="green">Green</option>
           </select>
         </div>
-        <button onClick={save} className="w-full bg-purple-600 text-white px-6 py-3 rounded-full font-bold">Save Settings</button>
+        <button onClick={save} className="w-full bg-purple-600 text-white px-6 py-3 rounded-full font-bold">
+          {saved ? "Saved ✓" : "Save Settings"}
+        </button>
       </div>
     </div>
   );
