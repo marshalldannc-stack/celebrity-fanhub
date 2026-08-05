@@ -1,16 +1,17 @@
-"use client";
-import { useState, useEffect } from "react";
 import Link from "next/link";
+import prisma from "@/lib/prisma";
 import Newsletter from "@/components/Newsletter";
 
-export default function HomePage() {
-  const [settings, setSettings] = useState({ artistName: "", heroImage: "", bio: "", news: "", eventsImage: "", fanCardImage: "", merchImage: "" });
+async function getSettings() {
+  try {
+    const row = await prisma.siteSetting.findUnique({ where: { key: "site" } });
+    if (row?.value) return JSON.parse(row.value);
+  } catch {}
+  return {};
+}
 
-  useEffect(() => {
-    fetch("/api/settings").then(r => r.json()).then(data => {
-      if (data) setSettings(data);
-    });
-  }, []);
+export default async function HomePage() {
+  const settings = await getSettings();
 
   return (
     <div>

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import fs from "fs";
+import path from "path";
 
 export async function GET() {
   try {
@@ -9,12 +11,8 @@ export async function GET() {
   return NextResponse.json({
     artistName: "Artist Name",
     heroImage: "",
-    logo: "",
     bio: "Official Fan Hub",
-    primaryColor: "purple",
-    eventsImage: "",
-    fanCardImage: "",
-    merchImage: "",
+    news: "",
   });
 }
 
