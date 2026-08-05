@@ -32,10 +32,8 @@ export default function CartPage() {
     if (saved) setCart(JSON.parse(saved));
   }, []);
 
-  const openChat = (method) => {
-    if (typeof Tawk_API !== "undefined") {
-      Tawk_API.maximize();
-    }
+  const openChat = () => {
+    if (typeof Tawk_API !== "undefined") Tawk_API.maximize();
   };
 
   const notifyAdmin = async (type, method) => {
@@ -88,22 +86,15 @@ export default function CartPage() {
   };
 
   const selectPayment = async (method) => {
-    if (method === "crypto") {
-      await processCrypto();
-    } else if (method === "card") {
-      setStep("done");
-    } else if (method === "other") {
-      setStep("other-method");
-    } else if (method === "giftcard") {
-      setSelectedMethod("giftcard");
-      setStep("instructions");
-    }
+    if (method === "crypto") await processCrypto();
+    else if (method === "card") setStep("done");
+    else if (method === "other") setStep("other-method");
+    else if (method === "giftcard") { setSelectedMethod("giftcard"); setStep("instructions"); }
   };
 
   const selectOtherMethod = async (method) => {
     setSelectedMethod(method);
     await notifyAdmin("request", method);
-    openChat(method);
     setStep("instructions");
   };
 
@@ -160,8 +151,15 @@ export default function CartPage() {
         <div className="text-5xl mb-4">📩</div>
         <h1 className="text-2xl font-bold mb-2">Payment Instructions</h1>
         <p className="text-gray-400 mb-2">Hi {session.user.email}</p>
-        <p className="text-gray-400 mb-2">{selectedMethod?.name} Payment — <strong>${cart.total}</strong></p>
-        <p className="text-gray-400 text-sm mb-6">Event: {cart.event}</p>
+        
+        <div className="bg-gray-800 rounded-xl p-4 mb-4 text-left">
+          <p className="text-sm text-gray-300"><strong>Method:</strong> {selectedMethod?.name}</p>
+          <p className="text-sm text-gray-300"><strong>Amount:</strong> ${cart.total}</p>
+          <p className="text-sm text-gray-300"><strong>Event:</strong> {cart.event}</p>
+          <p className="text-sm text-gray-300"><strong>Email:</strong> {session.user.email}</p>
+        </div>
+        <p className="text-gray-400 text-xs mb-4">Open chat below and we'll send you the payment details.</p>
+
         <div className="border border-gray-700 rounded-xl p-6 text-left space-y-4 text-sm">
           <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4">
             <p className="font-bold text-yellow-400 mb-2">⚠️ Important — Please Read</p>
