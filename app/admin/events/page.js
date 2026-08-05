@@ -3,46 +3,99 @@ import { useState, useEffect } from "react";
 
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [venue, setVenue] = useState("");
+  const [city, setCity] = useState("");
+  const [gaPrice, setGaPrice] = useState("49");
+  const [vipPrice, setVipPrice] = useState("149");
 
-  useEffect(() => {
-    fetch("/api/events").then(r => r.json()).then(setEvents);
-  }, []);
-
-  const addEvent = async () => {
-    const title = prompt("Event title:");
-    const date = prompt("Date (YYYY-MM-DD):");
-    const venue = prompt("Venue:");
-    const city = prompt("City:");
-    if (!title || !date) return;
-    await fetch("/api/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, date: new Date(date), venue, city }),
-    });
+  const loadEvents = async () => {
     const res = await fetch("/api/events");
-    setEvents(await res.json());
+    if (res.ok) setEvents(await res.json());
+  };
+
+  useEffect(() => { loadEvents(); }, []);
+
+  const resetForm = () => {
+    setTitle(""); setDate(""); setVenue(""); setCity("");
+    setGaPrice("49"); setVipPrice("149");
+    setEditId(null); setShowForm(false);
+  };
+
+  const saveEvent = async () => {
+    if (!title || !date) return alert("Title and date required");
+    const url = editId ? `/api/events/${editId}` : "/api/events";
+    const method = editId ? "PUT" : "POST";
+    await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, date, venue, city, gaPrice: Number(gaPrice), vipPrice: Number(vipPrice) }),
+    });
+    resetForm();
+    loadEvents();
+  };
+
+  const editEvent = (e) => {
+    setEditId(e.id);
+    setTitle(e.title);
+    setDate(e.date?.split("T")[0] || "");
+    setVenue(e.venue);
+    setCity(e.city);
+    setGaPrice(e.ticketTypes?.[0]?.price || 49);
+    setVipPrice(e.ticketTypes?.[1]?.price || 149);
+    setShowForm(true);
   };
 
   const deleteEvent = async (id) => {
+    if (!confirm("Delete this event?")) return;
     await fetch(`/api/events/${id}`, { method: "DELETE" });
-    const res = await fetch("/api/events");
-    setEvents(await res.json());
+    loadEvents();
   };
 
   return (
     <div className="max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Manage Events</h1>
-        <button onClick={addEvent} className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm">+ Add Event</button>
+        <button onClick={() => { resetForm(); setShowForm(!showForm); }} className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm">
+          {showForm ? "Cancel" : "+ Add Event"}
+        </button>
       </div>
+
+      {showForm && (
+        <div className="border border-gray-700 rounded-xl p-4 mb-6 space-y-3">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Event Title" />
+          <input value={date} onChange={(e) => setDate(e.target.value)} type="date" className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" />
+          <div className="flex gap-2">
+            <input value={venue} onChange={(e) => setVenue(e.target.value)} className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Venue" />
+            <input value={city} onChange={(e) => setCity(e.target.value)} className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="City" />
+          </div>
+          <div className="flex gap-2">
+            <input value={gaPrice} onChange={(e) => setGaPrice(e.target.value)} type="number" className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="GA Price" />
+            <input value={vipPrice} onChange={(e) => setVipPrice(e.target.value)} type="number" className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="VIP Price" />
+          </div>
+          <button onClick={saveEvent} className="w-full bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+            {editId ? "Update Event" : "Create Event"}
+          </button>
+        </div>
+      )}
+
       <div className="space-y-3">
         {events.map(event => (
           <div key={event.id} className="border border-gray-700 rounded-xl p-4 flex justify-between items-center">
             <div>
               <p className="font-bold">{event.title}</p>
               <p className="text-gray-400 text-sm">{new Date(event.date).toLocaleDateString()} • {event.venue}, {event.city}</p>
+              <p className="text-purple-400 text-xs">
+                {event.ticketTypes?.map(t => `${t.name}: $${t.price}`).join(" | ") || "No tickets"}
+              </p>
             </div>
-            <button onClick={() => deleteEvent(event.id)} className="text-red-400 text-sm">Delete</button>
+            <div className="flex gap-2">
+              <button onClick={() => editEvent(event)} className="text-blue-400 text-sm">Edit</button>
+              <button onClick={() => deleteEvent(event.id)} className="text-red-400 text-sm">Delete</button>
+            </div>
           </div>
         ))}
       </div>
