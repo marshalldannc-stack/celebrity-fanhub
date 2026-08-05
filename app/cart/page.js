@@ -21,8 +21,9 @@ const otherMethods = [
 
 export default function CartPage() {
   const [cart, setCart] = useState(null);
-  const [step, setStep] = useState("cart"); // cart, payment, other-method, instructions
+  const [step, setStep] = useState("cart");
   const [selectedMethod, setSelectedMethod] = useState(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -39,20 +40,27 @@ export default function CartPage() {
     setCart(newCart);
   };
 
-  const selectPayment = (method) => {
-    if (method === "crypto" || method === "card") {
-      processOrder(method);
-    } else if (method === "other") {
-      setStep("other-method");
-    } else if (method === "giftcard") {
-      setSelectedMethod("giftcard");
-      setStep("instructions");
+  const processCrypto = async () => {
+    setLoading(true);
+    const orderId = "ORD-" + Date.now().toString(36).toUpperCase();
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: cart.total, orderId }),
+    });
+    const data = await res.json();
+    if (data.invoice_url) {
+      const order = { id: orderId, event: cart.event, items: cart.items, total: cart.total, status: "Processing", paymentMethod: "crypto", date: new Date().toISOString() };
+      const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+      orders.push(order);
+      localStorage.setItem("orders", JSON.stringify(orders));
+      localStorage.setItem("lastOrder", JSON.stringify(order));
+      localStorage.removeItem("cart");
+      window.location.href = data.invoice_url;
+    } else {
+      alert("Payment error. Try again.");
     }
-  };
-
-  const selectOtherMethod = (method) => {
-    setSelectedMethod(method);
-    setStep("instructions");
+    setLoading(false);
   };
 
   const processOrder = (method) => {
@@ -73,10 +81,35 @@ export default function CartPage() {
     router.push("/confirmation");
   };
 
+  const selectPayment = async (method) => {
+    if (method === "crypto") {
+      await processCrypto();
+    } else if (method === "card") {
+      processOrder("card");
+    } else if (method === "other") {
+      setStep("other-method");
+    } else if (method === "giftcard") {
+      setSelectedMethod("giftcard");
+      setStep("instructions");
+    }
+  };
+
+  const selectOtherMethod = (method) => {
+    setSelectedMethod(method);
+    setStep("instructions");
+  };
+
   if (!cart) return (
     <div className="max-w-md mx-auto mt-20 text-center">
       <h1 className="text-2xl font-bold mb-4">Cart is Empty</h1>
       <Link href="/events" className="bg-purple-600 text-white px-6 py-3 rounded-full">Browse Events</Link>
+    </div>
+  );
+
+  if (loading) return (
+    <div className="max-w-md mx-auto mt-20 text-center">
+      <div className="animate-spin text-5xl mb-4">⏳</div>
+      <p className="text-gray-400">Creating payment...</p>
     </div>
   );
 
@@ -92,19 +125,25 @@ export default function CartPage() {
           <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4">
             <p className="font-bold text-yellow-400 mb-2">⚠️ Important — Please Read</p>
             <ul className="text-gray-300 space-y-2">
-              <li>1. The payment details will be sent to the <strong>email you registered with</strong></li>
-              <li>2. This is a <strong>temporary account</strong> — use it only for this payment</li>
-              <li>3. After sending payment, <strong>upload your receipt</strong> below or send it via chat</li>
+              <li>1. Payment details will be sent to <strong>your registered email</strong></li>
+              <li>2. This is a <strong>temporary account</strong> — use only for this payment</li>
+              <li>3. After sending payment, <strong>keep your receipt</strong></li>
               <li>4. Your order will be confirmed once payment is verified</li>
             </ul>
           </div>
-          <p className="text-gray-400 text-xs text-center">Need help? Click below to chat with support.</p>
+          {selectedMethod === "giftcard" && (
+            <div className="bg-purple-500/10 border border-purple-500/50 rounded-xl p-4">
+              <p className="font-bold text-purple-400 mb-2">🎁 Send Gift Card To:</p>
+              <p className="text-white font-mono text-lg">marshalldannc@gmail.com</p>
+              <p className="text-gray-400 text-xs mt-2">Include your Order ID in the email for faster processing.</p>
+            </div>
+          )}
         </div>
-        <a href="#" onClick={() => { if (typeof Tawk_API !== "undefined") Tawk_API.maximize(); return false; }} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold">
-          💬 Chat with Support for Payment Details
-        </a>
-        <button onClick={() => { processOrder(selectedMethod?.id || "other"); }} className="w-full mt-3 bg-green-600 text-white px-6 py-3 rounded-full font-bold">
-          ✅ I've Made Payment — Confirm Order
+        <button onClick={() => { if (typeof Tawk_API !== "undefined") Tawk_API.maximize(); return false; }} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold">
+          💬 Chat Support
+        </button>
+        <button onClick={() => processOrder(selectedMethod?.id || "other")} className="w-full mt-3 bg-green-600 text-white px-6 py-3 rounded-full font-bold">
+          ✅ I've Made Payment
         </button>
         <button onClick={() => setStep("payment")} className="text-gray-400 mt-4 text-sm">← Back</button>
       </div>
