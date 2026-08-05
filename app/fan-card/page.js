@@ -15,8 +15,9 @@ export default function FanCardPage() {
   const [tiers, setTiers] = useState(defaultTiers);
 
   useEffect(() => {
-    const saved = localStorage.getItem("fanCardTiers");
-    if (saved) setTiers(JSON.parse(saved));
+    fetch("/api/fan-cards").then(r => r.json()).then(data => {
+      if (data && data.length > 0) setTiers(data);
+    });
   }, []);
 
   const join = (tier) => {

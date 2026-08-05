@@ -15,14 +15,10 @@ export default function AdminFanCards() {
   const [form, setForm] = useState({ name: "", price: 0, emoji: "", perks: "", image: "" });
 
   useEffect(() => {
-    const saved = localStorage.getItem("fanCardTiers");
-    if (saved) setTiers(JSON.parse(saved));
+    fetch("/api/fan-cards").then(r => r.json()).then(data => {
+      if (data && data.length > 0) setTiers(data);
+    });
   }, []);
-
-  const saveTiers = (newTiers) => {
-    setTiers(newTiers);
-    localStorage.setItem("fanCardTiers", JSON.stringify(newTiers));
-  };
 
   const handleImage = async (e) => {
     const file = e.target.files[0];
@@ -47,18 +43,22 @@ export default function AdminFanCards() {
     setEditIdx(idx);
   };
 
-  const save = () => {
+  const save = async () => {
     const newTier = { ...form, price: Number(form.price), perks: form.perks.split(",").map(p => p.trim()) };
     const newTiers = [...tiers];
     if (editIdx !== null) newTiers[editIdx] = newTier;
-    saveTiers(newTiers);
+    setTiers(newTiers);
+    await fetch("/api/fan-cards", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTiers),
+    });
     setEditIdx(null);
   };
 
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Manage Fan Card Tiers</h1>
-      
       {editIdx !== null && (
         <div className="border border-gray-700 rounded-xl p-4 mb-6 space-y-3">
           <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Tier Name" />
@@ -73,7 +73,6 @@ export default function AdminFanCards() {
           </div>
         </div>
       )}
-
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {tiers.map((tier, i) => (
           <div key={i} className="border border-gray-700 rounded-xl p-4 text-center">
