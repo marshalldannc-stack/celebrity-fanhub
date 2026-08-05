@@ -34,6 +34,23 @@ export default function CartPage() {
     if (saved) setCart(JSON.parse(saved));
   }, []);
 
+  const notifyAdmin = async (type, method) => {
+    try {
+      await fetch("/api/payment-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: session?.user?.email || "guest",
+          method: method?.id || method || "other",
+          amount: cart.total,
+          orderId: type === "request" ? "REQ-" + Date.now().toString(36).toUpperCase() : "ORD-" + Date.now().toString(36).toUpperCase(),
+          event: cart.event,
+          type: type,
+        }),
+      });
+    } catch {}
+  };
+
   const removeItem = (index) => {
     const newCart = { ...cart };
     newCart.items.splice(index, 1);
@@ -73,7 +90,7 @@ export default function CartPage() {
       items: cart.items,
       total: cart.total,
       status: "Completed",
-      paymentMethod: method,
+      paymentMethod: method?.id || method,
       date: new Date().toISOString(),
       email: session?.user?.email || "",
     };
@@ -98,28 +115,19 @@ export default function CartPage() {
     }
   };
 
-  const selectOtherMethod = (method) => {
+  const selectOtherMethod = async (method) => {
     setSelectedMethod(method);
+    await notifyAdmin("request", method);
     setStep("instructions");
   };
 
   const handlePaymentComplete = async () => {
     if (clicked) return;
     setClicked(true);
-    try {
-      await fetch("/api/payment-requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: session?.user?.email || "guest",
-          method: selectedMethod?.id || "other",
-          amount: cart.total,
-          orderId: "ORD-" + Date.now().toString(36).toUpperCase(),
-          event: cart.event,
-        }),
-      });
-    } catch {}
-    processOrder(selectedMethod?.id || "other");
+    await notifyAdmin("completed", selectedMethod);
+    setTimeout(() => {
+      processOrder(selectedMethod);
+    }, 500);
   };
 
   if (!session) {
@@ -156,7 +164,7 @@ export default function CartPage() {
         <h1 className="text-2xl font-bold mb-2">Payment Instructions</h1>
         <p className="text-gray-400 mb-2">Hi {session.user.email}</p>
         <p className="text-gray-400 mb-6">
-          {selectedMethod === "giftcard" ? "Gift Card Payment" : `${selectedMethod?.name} Payment`}
+          {selectedMethod?.name} Payment — Payment details will be sent to your email.
         </p>
         <div className="border border-gray-700 rounded-xl p-6 text-left space-y-4 text-sm">
           <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4">
@@ -168,12 +176,6 @@ export default function CartPage() {
               <li>4. Your order will be confirmed once payment is verified</li>
             </ul>
           </div>
-          {selectedMethod === "giftcard" && (
-            <div className="bg-purple-500/10 border border-purple-500/50 rounded-xl p-4">
-              <p className="font-bold text-purple-400 mb-2">🎁 Send Gift Card To:</p>
-              <p className="text-white font-mono text-lg">marshalldannc@gmail.com</p>
-            </div>
-          )}
         </div>
         <button onClick={() => { if (typeof Tawk_API !== "undefined") Tawk_API.maximize(); return false; }} className="block w-full mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:bg-blue-500">
           💬 Chat Support
