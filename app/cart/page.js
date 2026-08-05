@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const paymentMethods = [
@@ -27,7 +26,6 @@ export default function CartPage() {
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [loading, setLoading] = useState(false);
   const [clicked, setClicked] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const saved = localStorage.getItem("cart");
@@ -83,30 +81,11 @@ export default function CartPage() {
     setLoading(false);
   };
 
-  const processOrder = (method) => {
-    const order = {
-      id: "ORD-" + Date.now().toString(36).toUpperCase(),
-      event: cart.event,
-      items: cart.items,
-      total: cart.total,
-      status: "Completed",
-      paymentMethod: method?.id || method,
-      date: new Date().toISOString(),
-      email: session?.user?.email || "",
-    };
-    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-    orders.push(order);
-    localStorage.setItem("orders", JSON.stringify(orders));
-    localStorage.setItem("lastOrder", JSON.stringify(order));
-    localStorage.removeItem("cart");
-    router.push("/confirmation");
-  };
-
   const selectPayment = async (method) => {
     if (method === "crypto") {
       await processCrypto();
     } else if (method === "card") {
-      processOrder("card");
+      setStep("done");
     } else if (method === "other") {
       setStep("other-method");
     } else if (method === "giftcard") {
@@ -125,9 +104,8 @@ export default function CartPage() {
     if (clicked) return;
     setClicked(true);
     await notifyAdmin("completed", selectedMethod);
-    setTimeout(() => {
-      processOrder(selectedMethod);
-    }, 500);
+    setStep("done");
+    setClicked(false);
   };
 
   if (!session) {
@@ -142,7 +120,7 @@ export default function CartPage() {
     );
   }
 
-  if (!cart) return (
+  if (!cart && step !== "done") return (
     <div className="max-w-md mx-auto mt-20 text-center">
       <h1 className="text-2xl font-bold mb-4">Cart is Empty</h1>
       <p className="text-gray-400 mb-6">Welcome back, {session.user.email}</p>
@@ -156,6 +134,18 @@ export default function CartPage() {
       <p className="text-gray-400">Creating payment...</p>
     </div>
   );
+
+  if (step === "done") {
+    return (
+      <div className="max-w-md mx-auto mt-20 text-center">
+        <div className="text-6xl mb-4">✅</div>
+        <h1 className="text-2xl font-bold mb-2">Order Complete!</h1>
+        <p className="text-gray-400 mb-6">Payment details will be sent to {session?.user?.email}</p>
+        <Link href="/profile" className="bg-purple-600 text-white px-6 py-3 rounded-full font-bold">View Orders</Link>
+        <Link href="/events" className="block text-purple-400 mt-4 text-sm">Continue Shopping</Link>
+      </div>
+    );
+  }
 
   if (step === "instructions") {
     return (
