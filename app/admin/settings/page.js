@@ -5,9 +5,10 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState({
     artistName: "",
     heroImage: "",
-    logo: "",
     bio: "",
     news: "",
+    newsletterTitle: "Join the Newsletter",
+    newsletterText: "Get exclusive updates on new music, tours, and merch drops.",
     eventsImage: "",
     fanCardImage: "",
     merchImage: "",
@@ -31,8 +32,7 @@ export default function SettingsPage() {
       canvas.width = w;
       canvas.height = h;
       ctx.drawImage(img, 0, 0, w, h);
-      const compressed = canvas.toDataURL("image/jpeg", 0.5);
-      setSettings(prev => ({ ...prev, [field]: compressed }));
+      setSettings(prev => ({ ...prev, [field]: canvas.toDataURL("image/jpeg", 0.5) }));
     };
     img.src = URL.createObjectURL(file);
   };
@@ -43,16 +43,24 @@ export default function SettingsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(settings),
     });
-    alert("Saved!");
+    alert("Saved! Refresh the site to see changes.");
   };
 
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Site Settings</h1>
       <div className="space-y-4">
-        <input value={settings.artistName} onChange={(e) => setSettings({ ...settings, artistName: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Artist Name" />
-        <input value={settings.bio} onChange={(e) => setSettings({ ...settings, bio: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Bio" />
-        <textarea value={settings.news || ""} onChange={(e) => setSettings({ ...settings, news: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="News / Updates (shown on homepage)" rows="3" />
+        <input value={settings.artistName} onChange={(e) => setSettings({ ...settings, artistName: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Celebrity / Artist Name" />
+        <input value={settings.bio} onChange={(e) => setSettings({ ...settings, bio: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white" placeholder="Short bio / tagline" />
+        <textarea value={settings.news || ""} onChange={(e) => setSettings({ ...settings, news: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white text-sm" placeholder="Latest news / announcement" rows="3" />
+        
+        <hr className="border-gray-700" />
+        <p className="text-gray-400 text-sm font-bold">Newsletter Section</p>
+        <input value={settings.newsletterTitle || ""} onChange={(e) => setSettings({ ...settings, newsletterTitle: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Newsletter title" />
+        <input value={settings.newsletterText || ""} onChange={(e) => setSettings({ ...settings, newsletterText: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white text-sm" placeholder="Newsletter description" />
+
+        <hr className="border-gray-700" />
+        <p className="text-gray-400 text-sm font-bold">Section Images</p>
         <label className="text-gray-400 text-sm block">Hero Image <input type="file" accept="image/*" onChange={(e) => handleImage(e, "heroImage")} className="mt-1" /></label>
         {settings.heroImage && <img src={settings.heroImage} className="h-20 rounded" />}
         <label className="text-gray-400 text-sm block">Events Image <input type="file" accept="image/*" onChange={(e) => handleImage(e, "eventsImage")} className="mt-1" /></label>
