@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession, signOut } from "next-auth/react";
 import Script from "next/script";
 import "./globals.css";
 
 function NavBar() {
+  const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const links = [
     { href: "/events", label: "Events" },
@@ -25,8 +26,17 @@ function NavBar() {
           {links.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}
           <a href="/cart">Cart</a>
           <a href="/profile">Profile</a>
-          <a href="/login">Login</a>
-          <a href="/signup" className="bg-purple-600 text-white px-4 py-2 rounded-full">Sign Up</a>
+          {session ? (
+            <>
+              <span className="text-gray-400 text-xs">{session.user.email}</span>
+              <button onClick={() => signOut()} className="bg-red-600 text-white px-3 py-1 rounded-full text-xs">Logout</button>
+            </>
+          ) : (
+            <>
+              <a href="/login">Login</a>
+              <a href="/signup" className="bg-purple-600 text-white px-4 py-2 rounded-full">Sign Up</a>
+            </>
+          )}
         </div>
       </div>
       {menuOpen && (
@@ -34,8 +44,17 @@ function NavBar() {
           {links.map(l => <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)}>{l.label}</a>)}
           <a href="/cart" onClick={() => setMenuOpen(false)}>Cart</a>
           <a href="/profile" onClick={() => setMenuOpen(false)}>Profile</a>
-          <a href="/login" onClick={() => setMenuOpen(false)}>Login</a>
-          <a href="/signup" onClick={() => setMenuOpen(false)} className="bg-purple-600 text-white px-4 py-2 rounded-full w-fit">Sign Up</a>
+          {session ? (
+            <>
+              <span className="text-gray-400 text-xs">{session.user.email}</span>
+              <button onClick={() => { signOut(); setMenuOpen(false); }} className="bg-red-600 text-white px-3 py-1 rounded-full text-xs w-fit">Logout</button>
+            </>
+          ) : (
+            <>
+              <a href="/login" onClick={() => setMenuOpen(false)}>Login</a>
+              <a href="/signup" onClick={() => setMenuOpen(false)} className="bg-purple-600 text-white px-4 py-2 rounded-full w-fit">Sign Up</a>
+            </>
+          )}
         </div>
       )}
     </nav>
