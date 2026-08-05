@@ -1,24 +1,31 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AdminMerch() {
-  const [items, setItems] = useState([
-    { id: "1", name: "World Tour Hoodie", price: 65, category: "Clothing" },
-    { id: "2", name: "Signed Vinyl", price: 45, category: "Music" },
-    { id: "3", name: "Tour T-Shirt", price: 35, category: "Clothing" },
-  ]);
+  const [items, setItems] = useState([]);
 
-  const addItem = () => {
+  useEffect(() => {
+    fetch("/api/merch").then(r => r.json()).then(setItems);
+  }, []);
+
+  const addItem = async () => {
     const name = prompt("Item name:");
     const price = prompt("Price:");
     const category = prompt("Category:");
-    if (name && price) {
-      setItems([...items, { id: Date.now().toString(), name, price: Number(price), category }]);
-    }
+    if (!name || !price) return;
+    await fetch("/api/merch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, price: Number(price), category }),
+    });
+    const res = await fetch("/api/merch");
+    setItems(await res.json());
   };
 
-  const deleteItem = (id) => {
-    setItems(items.filter(i => i.id !== id));
+  const deleteItem = async (id) => {
+    await fetch(`/api/merch/${id}`, { method: "DELETE" });
+    const res = await fetch("/api/merch");
+    setItems(await res.json());
   };
 
   return (

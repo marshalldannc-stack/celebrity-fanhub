@@ -1,26 +1,32 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AdminEvents() {
-  const [events, setEvents] = useState([
-    { id: "1", title: "World Tour 2026 - NYC", date: "2026-09-15", venue: "Madison Square Garden", city: "New York" },
-    { id: "2", title: "World Tour 2026 - LA", date: "2026-09-22", venue: "Hollywood Bowl", city: "Los Angeles" },
-    { id: "3", title: "World Tour 2026 - Chicago", date: "2026-10-05", venue: "United Center", city: "Chicago" },
-    { id: "4", title: "Meet & Greet VIP", date: "2026-10-12", venue: "Private Studio", city: "Miami" },
-  ]);
+  const [events, setEvents] = useState([]);
 
-  const addEvent = () => {
+  useEffect(() => {
+    fetch("/api/events").then(r => r.json()).then(setEvents);
+  }, []);
+
+  const addEvent = async () => {
     const title = prompt("Event title:");
     const date = prompt("Date (YYYY-MM-DD):");
     const venue = prompt("Venue:");
     const city = prompt("City:");
-    if (title && date) {
-      setEvents([...events, { id: Date.now().toString(), title, date, venue, city }]);
-    }
+    if (!title || !date) return;
+    await fetch("/api/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, date: new Date(date), venue, city }),
+    });
+    const res = await fetch("/api/events");
+    setEvents(await res.json());
   };
 
-  const deleteEvent = (id) => {
-    setEvents(events.filter(e => e.id !== id));
+  const deleteEvent = async (id) => {
+    await fetch(`/api/events/${id}`, { method: "DELETE" });
+    const res = await fetch("/api/events");
+    setEvents(await res.json());
   };
 
   return (
@@ -34,7 +40,7 @@ export default function AdminEvents() {
           <div key={event.id} className="border border-gray-700 rounded-xl p-4 flex justify-between items-center">
             <div>
               <p className="font-bold">{event.title}</p>
-              <p className="text-gray-400 text-sm">{event.date} • {event.venue}, {event.city}</p>
+              <p className="text-gray-400 text-sm">{new Date(event.date).toLocaleDateString()} • {event.venue}, {event.city}</p>
             </div>
             <button onClick={() => deleteEvent(event.id)} className="text-red-400 text-sm">Delete</button>
           </div>
