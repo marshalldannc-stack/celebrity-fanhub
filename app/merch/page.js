@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import AddToCartButton from "./AddToCartButton";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 30;
+export const revalidate = 60;
 
 export default async function MerchPage() {
   let items = [];
