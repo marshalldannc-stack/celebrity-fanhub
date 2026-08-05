@@ -1,47 +1,41 @@
-"use client";
-import { useState } from "react";
-import { SessionProvider } from "next-auth/react";
-import "./globals.css";
+import Link from "next/link";
 
-function NavBar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const links = ["Events", "Merch", "Fan Card", "Gallery", "About", "Contact"];
-
+export default function AdminPage() {
   return (
-    <nav className="p-4 border-b border-gray-800">
-      <div className="flex justify-between items-center">
-        <a href="/" className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">FanHub</a>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-white text-2xl">☰</button>
-        <div className="hidden md:flex space-x-4 text-sm items-center">
-          {links.map(l => <a key={l} href={`/${l.toLowerCase().replace(" ", "-")}`}>{l}</a>)}
-          <a href="/cart">Cart</a>
-          <a href="/profile">Profile</a>
-          <a href="/login">Login</a>
-          <a href="/signup" className="bg-purple-600 text-white px-4 py-2 rounded-full">Sign Up</a>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold">Events</h2>
+          <p className="text-gray-400 text-sm mt-2">Manage tour dates and tickets</p>
+          <Link href="/admin/events" className="text-purple-400 text-sm mt-2 block">Manage Events →</Link>
+        </div>
+        <div className="border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold">Merch</h2>
+          <p className="text-gray-400 text-sm mt-2">Add and manage merch items</p>
+          <Link href="/admin/merch" className="text-purple-400 text-sm mt-2 block">Manage Merch →</Link>
+        </div>
+        <div className="border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold">Fan Cards</h2>
+          <p className="text-gray-400 text-sm mt-2">Edit tiers, prices, and perks</p>
+          <Link href="/admin/fan-cards" className="text-purple-400 text-sm mt-2 block">Manage Fan Cards →</Link>
+        </div>
+        <div className="border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold">Gallery</h2>
+          <p className="text-gray-400 text-sm mt-2">Upload and manage photos</p>
+          <Link href="/admin/gallery" className="text-purple-400 text-sm mt-2 block">Manage Gallery →</Link>
+        </div>
+        <div className="border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold">Subscribers</h2>
+          <p className="text-gray-400 text-sm mt-2">View newsletter subscribers</p>
+          <Link href="/admin/subscribers" className="text-purple-400 text-sm mt-2 block">View Subscribers →</Link>
+        </div>
+        <div className="border border-purple-500 rounded-xl p-6 bg-purple-500/10">
+          <h2 className="text-lg font-bold">Site Settings</h2>
+          <p className="text-gray-400 text-sm mt-2">Customize everything</p>
+          <Link href="/admin/settings" className="text-purple-400 text-sm mt-2 block">Customize Site →</Link>
         </div>
       </div>
-      {menuOpen && (
-        <div className="md:hidden mt-4 flex flex-col space-y-3 text-sm">
-          {links.map(l => <a key={l} href={`/${l.toLowerCase().replace(" ", "-")}`} onClick={() => setMenuOpen(false)}>{l}</a>)}
-          <a href="/cart" onClick={() => setMenuOpen(false)}>Cart</a>
-          <a href="/profile" onClick={() => setMenuOpen(false)}>Profile</a>
-          <a href="/login" onClick={() => setMenuOpen(false)}>Login</a>
-          <a href="/signup" onClick={() => setMenuOpen(false)} className="bg-purple-600 text-white px-4 py-2 rounded-full w-fit">Sign Up</a>
-        </div>
-      )}
-    </nav>
-  );
-}
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body className="bg-black text-white min-h-screen">
-        <SessionProvider>
-          <NavBar />
-          <main className="p-4 md:p-6">{children}</main>
-        </SessionProvider>
-      </body>
-    </html>
+    </div>
   );
 }
