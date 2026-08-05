@@ -13,7 +13,9 @@ export default function ConfirmationPage() {
   if (!order) {
     return (
       <div className="max-w-md mx-auto mt-20 text-center">
-        <h1 className="text-2xl font-bold mb-4">No Order Found</h1>
+        <div className="text-6xl mb-4">✅</div>
+        <h1 className="text-2xl font-bold mb-4">Order Complete!</h1>
+        <p className="text-gray-400 mb-6">Thank you for your purchase.</p>
         <Link href="/events" className="bg-purple-600 text-white px-6 py-3 rounded-full">Browse Events</Link>
       </div>
     );
@@ -23,35 +25,14 @@ export default function ConfirmationPage() {
     <div className="max-w-md mx-auto mt-20 text-center">
       <div className="text-6xl mb-4">✅</div>
       <h1 className="text-2xl font-bold mb-2">Order Confirmed!</h1>
-      <p className="text-gray-400 mb-6">Thank you for your purchase. We'll send payment details to your email.</p>
-      
+      <p className="text-gray-400 mb-6">We'll send payment details to your email.</p>
       <div className="border border-gray-700 rounded-xl p-6 text-left space-y-3">
-        <div className="flex justify-between">
-          <span className="text-gray-400">Order ID</span>
-          <span className="text-sm">{order.id}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-400">Event</span>
-          <span className="font-bold">{order.event}</span>
-        </div>
-        {order.items && order.items.map((item, i) => (
-          <div key={i} className="flex justify-between text-sm">
-            <span>{item.name} x{item.qty}</span>
-            <span>${item.price * item.qty}</span>
-          </div>
-        ))}
-        <hr className="border-gray-700" />
-        <div className="flex justify-between font-bold text-lg">
-          <span>Total</span>
-          <span className="text-purple-400">${order.total}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Payment Method</span>
-          <span>{order.paymentMethod}</span>
-        </div>
+        <p><span className="text-gray-400">Order:</span> {order.id}</p>
+        <p><span className="text-gray-400">Event:</span> {order.event}</p>
+        <p><span className="text-gray-400">Total:</span> <span className="text-purple-400 font-bold">${order.total}</span></p>
+        <p><span className="text-gray-400">Method:</span> {order.paymentMethod}</p>
       </div>
-
-      <Link href="/profile" className="inline-block mt-6 bg-purple-600 text-white px-6 py-3 rounded-full font-bold">View My Orders</Link>
+      <Link href="/profile" className="inline-block mt-6 bg-purple-600 text-white px-6 py-3 rounded-full font-bold">View Orders</Link>
     </div>
   );
 }
