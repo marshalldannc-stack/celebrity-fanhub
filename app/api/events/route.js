@@ -1,3 +1,18 @@
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+
+export async function GET() {
+  try {
+    const events = await prisma.event.findMany({
+      include: { ticketTypes: true },
+      orderBy: { date: "asc" },
+    });
+    return NextResponse.json(events);
+  } catch (e) {
+    return NextResponse.json([], { status: 200 });
+  }
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -18,6 +33,6 @@ export async function POST(request) {
     });
     return NextResponse.json(event);
   } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create" }, { status: 500 });
   }
 }
