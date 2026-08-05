@@ -1,14 +1,31 @@
+"use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Newsletter from "@/components/Newsletter";
 
 export default function HomePage() {
+  const [settings, setSettings] = useState({
+    artistName: "Artist Name",
+    heroImage: "",
+    bio: "Official Fan Hub — Events, Merch & Exclusive Content",
+  });
+
+  useEffect(() => {
+    const saved = localStorage.getItem("siteSettings");
+    if (saved) setSettings(JSON.parse(saved));
+  }, []);
+
   return (
     <div>
-      <section className="text-center py-20">
+      <section className="text-center py-20 relative" style={settings.heroImage ? {
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${settings.heroImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      } : {}}>
         <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
-          Artist Name
+          {settings.artistName}
         </h1>
-        <p className="text-gray-400 text-lg mb-8">Official Fan Hub — Events, Merch & Exclusive Content</p>
+        <p className="text-gray-400 text-lg mb-8">{settings.bio}</p>
         <div className="flex gap-4 justify-center">
           <Link href="/events" className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-200">Tour Dates</Link>
           <Link href="/merch" className="border border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-black transition">Shop Merch</Link>

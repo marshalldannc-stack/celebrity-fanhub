@@ -25,6 +25,11 @@ export default function AdminPage() {
           <p className="text-gray-400 text-sm mt-2">View fan card members</p>
           <Link href="/admin/fan-cards" className="text-purple-400 text-sm mt-2 block">View Members →</Link>
         </div>
+        <div className="border border-purple-500 rounded-xl p-6 bg-purple-500/10">
+          <h2 className="text-lg font-bold">Site Settings</h2>
+          <p className="text-gray-400 text-sm mt-2">Customize artist name, images, colors</p>
+          <Link href="/admin/settings" className="text-purple-400 text-sm mt-2 block">Customize Site →</Link>
+        </div>
       </div>
     </div>
   );
