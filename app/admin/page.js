@@ -31,6 +31,11 @@ export default function AdminPage() {
           <Link href="/admin/gallery" className="text-purple-400 text-sm mt-2 block">Manage Gallery →</Link>
         </div>
         <div className="border border-gray-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold">Referrals</h2>
+          <p className="text-gray-400 text-sm mt-2">Track partners, clicks, and sales</p>
+          <Link href="/admin/referrals" className="text-purple-400 text-sm mt-2 block">Manage Referrals →</Link>
+        </div>
+        <div className="border border-gray-700 rounded-xl p-6">
           <h2 className="text-lg font-bold">Users</h2>
           <p className="text-gray-400 text-sm mt-2">View registered users</p>
           <Link href="/admin/users" className="text-purple-400 text-sm mt-2 block">View Users →</Link>
