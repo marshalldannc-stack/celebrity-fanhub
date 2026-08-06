@@ -23,7 +23,7 @@ function NavBar() {
     <nav className="p-4 border-b border-gray-800">
       <div className="flex justify-between items-center">
         <a href="/" className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">FanHub</a>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden text-white text-2xl">☰</button>
+        <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden text-white text-2xl bg-gray-800 px-3 py-1 rounded-lg hover:bg-gray-700">☰</button>
         <div className="hidden lg:flex space-x-4 text-sm items-center">
           {links.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}
           <a href="/cart">Cart</a>
