@@ -2,23 +2,27 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   const { amount, orderId } = await request.json();
-  
+
   try {
-    const res = await fetch("https://api.nowpayments.io/v1/invoice", {
+    const res = await fetch("https://plisio.net/api/v1/invoices/new", {
       method: "POST",
       headers: {
-        "x-api-key": process.env.NOWPAYMENTS_API_KEY || "3HN1BB6-FW3MQ7F-M2AGMJ0-H3CJGF4",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        price_amount: amount,
-        price_currency: "usd",
-        order_id: orderId,
-        order_description: "FanHub Order",
+        api_key: process.env.PLISIO_API_KEY,
+        order_number: orderId,
+        order_name: "FanHub Order",
+        source_currency: "USD",
+        source_amount: amount,
       }),
     });
     const data = await res.json();
-    return NextResponse.json({ invoice_url: data.invoice_url });
+    
+    if (data.data?.invoice_url) {
+      return NextResponse.json({ invoice_url: data.data.invoice_url });
+    }
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   } catch {
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
