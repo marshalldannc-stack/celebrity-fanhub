@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { SessionProvider, useSession, signOut } from "next-auth/react";
 import Script from "next/script";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 function NavBar() {
@@ -88,6 +89,7 @@ export default function RootLayout({ children }) {
           }}
         />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
