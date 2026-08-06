@@ -23,8 +23,8 @@ function NavBar() {
     <nav className="p-4 border-b border-gray-800">
       <div className="flex justify-between items-center">
         <a href="/" className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">FanHub</a>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-white text-2xl">☰</button>
-        <div className="hidden md:flex space-x-4 text-sm items-center">
+        <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden text-white text-2xl">☰</button>
+        <div className="hidden lg:flex space-x-4 text-sm items-center">
           {links.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}
           <a href="/cart">Cart</a>
           <a href="/profile">Profile</a>
@@ -42,7 +42,7 @@ function NavBar() {
         </div>
       </div>
       {menuOpen && (
-        <div className="md:hidden mt-4 flex flex-col space-y-3 text-sm">
+        <div className="lg:hidden mt-4 flex flex-col space-y-3 text-sm">
           {links.map(l => <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)}>{l.label}</a>)}
           <a href="/cart" onClick={() => setMenuOpen(false)}>Cart</a>
           <a href="/profile" onClick={() => setMenuOpen(false)}>Profile</a>
