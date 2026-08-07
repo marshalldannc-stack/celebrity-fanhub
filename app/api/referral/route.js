@@ -6,13 +6,13 @@ export async function GET(request) {
   const code = searchParams.get("code");
   
   if (code) {
-    try {
-      await prisma.referralCode.updateMany({
-        where: { code },
-        data: { clicks: { increment: 1 } },
-      });
-    } catch {}
+    // Track click in background - don't wait
+    prisma.referralCode.updateMany({
+      where: { code },
+      data: { clicks: { increment: 1 } },
+    }).catch(() => {});
     
+    // Redirect instantly
     const res = NextResponse.redirect(new URL("/", request.url));
     res.cookies.set("referral", code, { maxAge: 86400 * 30, path: "/" });
     return res;
