@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import ApproveButton from "./ApproveButton";
+import DeleteButton from "./DeleteButton";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +41,8 @@ export default async function PaymentRequestsPage() {
                       {r.status}
                     </span>
                   </td>
-                  <td className="p-3">
-                    {r.status === "pending" && <ApproveButton id={r.id} />}
+                  <td className="p-3 flex gap-2">
+                    <DeleteButton id={r.id} />
                   </td>
                 </tr>
               ))}

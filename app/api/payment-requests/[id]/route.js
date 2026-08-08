@@ -10,3 +10,9 @@ export async function PUT(request, { params }) {
   });
   return NextResponse.json({ success: true });
 }
+
+export async function DELETE(request, { params }) {
+  const { id } = await params;
+  await prisma.paymentRequest.delete({ where: { id } });
+  return NextResponse.json({ success: true });
+}
